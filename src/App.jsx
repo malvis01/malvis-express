@@ -6,6 +6,7 @@ import {
 } from 'lucide-react'
 import { isSupabaseConfigured, supabase } from './lib/supabase'
 import AdminDashboard from './AdminDashboard.jsx'
+import CustomerPortal from './CustomerPortal.jsx'
 
 const services = [
   { icon: Package, title: 'Parcels & documents', text: 'For personal packages, important documents and everyday deliveries.' },
@@ -216,11 +217,7 @@ function App() {
 
       <section className="about-section" id="about"><div className="about-icon"><Globe2 size={28} /></div><div><div className="eyebrow dark-eyebrow">BUILT TO CONNECT DISTANCES</div><h2>Moving goods.<br /><em>Bringing people closer.</em></h2></div><p>Malvis Express is being developed as a worldwide delivery and shipment management platform, bringing shipment enquiries, logistics coordination and tracking into one place.</p></section>
 
-      <section className="portal-section" id="account">
-        <div className="portal-icon"><FileText size={23} /></div>
-        <div><strong>Customer account portal</strong><p>Customer registration, sign-in and personal shipment management are planned for the next development stage.</p></div>
-        <span className="coming-label">Coming next</span>
-      </section>
+      <div id="account"><CustomerPortal /></div>
 
       <footer><a className="brand footer-brand" href="#home"><span className="brand-mark"><Package size={20} /></span><span>MALVIS<span className="brand-light"> EXPRESS</span></span></a><span>© {new Date().getFullYear()} Malvis Express. Built to move what matters.</span><span className="footer-status"><i /> {isSupabaseConfigured ? 'Backend project connected' : 'Backend setup pending'}</span><a className="admin-footer-link" href="#admin">Admin access</a></footer>
     </main>
