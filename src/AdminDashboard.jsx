@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { ArrowLeft, LogOut, Package, RefreshCw, Search, Plus, CheckCircle2, AlertCircle, Truck, Clock3 } from 'lucide-react'
 import { supabase } from './lib/supabase'
+import AdminPayments from './AdminPayments.jsx'
 
 const statuses = [
   ['booking_created', 'Shipment request created'],
@@ -49,6 +50,7 @@ export default function AdminDashboard({ onExit }) {
   const [notice, setNotice] = useState('')
   const [error, setError] = useState('')
   const [editing, setEditing] = useState(null)
+  const [paymentDeliveryId, setPaymentDeliveryId] = useState(null)
   const [eventForm, setEventForm] = useState({ status: 'in_transit', location_label: '', description: '' })
 
   const verifyAdmin = useCallback(async (candidate) => {
@@ -282,7 +284,8 @@ export default function AdminDashboard({ onExit }) {
             <div className="shipment-row-top"><div><strong>{item.tracking_number}</strong><small>{dateLabel(item.created_at)}</small></div><span className={'status-chip status-' + item.status}>{statuses.find(([value]) => value === item.status)?.[1] || item.status}</span></div>
             <div className="shipment-route"><span>{item.pickup_location_label || 'Pickup not set'}</span><ArrowRight size={15} /><span>{item.dropoff_location_label || 'Destination not set'}</span></div>
             <div className="shipment-meta"><span>{item.delivery_type} · {item.service_scope}</span><span>To: {item.dropoff_contact_name || 'Recipient'} · {item.dropoff_contact_phone || 'No phone'}</span><span>{item.tracking_code_issued ? 'Tracking issued' : 'Tracking not issued'}</span></div>
-            <div className="shipment-actions"><button className="admin-plain-button" onClick={() => { setEditing(item); setShowCreate(false); setEventForm({ status: item.status, location_label: '', description: '' }); setError(''); setNotice('') }}>Update status <ArrowRight size={14} /></button></div>
+            <div className="shipment-actions"><button className="admin-plain-button" onClick={() => { setEditing(item); setShowCreate(false); setEventForm({ status: item.status, location_label: '', description: '' }); setError(''); setNotice('') }}>Update status <ArrowRight size={14} /></button><button className="admin-plain-button" onClick={() => { setPaymentDeliveryId(paymentDeliveryId === item.id ? null : item.id); setEditing(null); setShowCreate(false); setError(''); setNotice('') }}>Quote / payments</button></div>
+            {paymentDeliveryId === item.id && <AdminPayments delivery={item} adminId={user.id} onUpdated={loadData} />}
           </article>)}</div>}
       </section>
       <p className="admin-footnote"><Clock3 size={14} /> Admin changes are recorded in the database audit log. Payment collection and carrier integrations are not enabled yet.</p>
