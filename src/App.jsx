@@ -143,7 +143,7 @@ function App() {
       <section className="quick-strip">
         <div><span className="strip-icon"><Package /></span><span><strong>Multiple shipment types</strong><small>Parcels, freight and documents</small></span></div>
         <div><span className="strip-icon"><Globe2 /></span><span><strong>Worldwide direction</strong><small>International shipping enquiries</small></span></div>
-        <div><span className="strip-icon"><Clock3 /></span><span><strong>Shipment visibility</strong><small>Tracking service in development</small></span></div>
+        <div><span className="strip-icon"><Clock3 /></span><span><strong>Shipment visibility</strong><small>Tracking with recipient verification</small></span></div>
       </section>
 
       <section className="tracking-section" id="tracking">
