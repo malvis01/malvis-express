@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { ArrowRight, LogOut, Package, RefreshCw, Upload, CheckCircle2, AlertCircle } from 'lucide-react'
 import { supabase } from './lib/supabase'
+import { normalizePhoneE164, phoneToAuthEmail } from './lib/phoneAuth'
 
 const statusLabels = {
   booking_created: 'Request received', awaiting_payment: 'Awaiting payment',
@@ -16,12 +17,6 @@ const blank = {
   pickup_location_label: '', dropoff_location_label: '',
   pickup_contact_name: '', pickup_contact_phone: '',
   dropoff_contact_name: '', dropoff_contact_phone: '', customer_note: '',
-}
-function toE164(value) {
-  const digits = String(value || '').replace(/\D/g, '')
-  if (digits.startsWith('0')) return '+234' + digits.slice(1)
-  if (digits.startsWith('234')) return '+' + digits
-  return String(value || '').trim()
 }
 
 const fieldStyle = { width: '100%', padding: '12px', border: '1px solid #d8dce2', borderRadius: '8px', marginTop: '6px', boxSizing: 'border-box' }
@@ -62,13 +57,26 @@ export default function CustomerPortal() {
 
   async function authenticate(event) {
     event.preventDefault(); setAuthBusy(true); setError(''); setNotice('')
+    let authEmail
+    try {
+      authEmail = phoneToAuthEmail(phone)
+    } catch (validationError) {
+      setAuthBusy(false)
+      setError(validationError.message)
+      return
+    }
+    const normalizedPhone = normalizePhoneE164(phone)
     const result = authMode === 'signup'
-      ? await supabase.auth.signUp({ phone: toE164(phone), password, options: { data: { display_name: displayName.trim() } } })
-      : await supabase.auth.signInWithPassword({ phone: toE164(phone), password })
+      ? await supabase.auth.signUp({
+          email: authEmail,
+          password,
+          options: { data: { display_name: displayName.trim(), phone_e164: normalizedPhone } },
+        })
+      : await supabase.auth.signInWithPassword({ email: authEmail, password })
     setAuthBusy(false)
     if (result.error) { setError(result.error.message); return }
     if (result.data.user && !result.data.session) {
-      setError('Your account was created, but no session was issued. Phone confirmation may still be enabled in Supabase. The requested no-OTP setup must be configured before customers can sign in.')
+      setError('Your account was created, but Supabase is waiting for email confirmation. Turn off email confirmations for this phone-only login setup, then try again.')
       return
     }
     setUser(result.data.user || null)
@@ -118,13 +126,13 @@ export default function CustomerPortal() {
     <p>Use your phone number and password to request deliveries and follow payment and shipment progress.</p>
     <form onSubmit={authenticate}>
       {authMode === 'signup' && <label style={labelStyle}>Full name<input style={fieldStyle} value={displayName} onChange={e => setDisplayName(e.target.value)} required /></label>}
-      <label style={labelStyle}>Phone number<input style={fieldStyle} type="tel" autoComplete="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="+234…" required /></label>
+      <label style={labelStyle}>Phone number<input style={fieldStyle} type="tel" autoComplete="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="080… or +234…" required /></label>
       <label style={labelStyle}>Password<input style={fieldStyle} type="password" autoComplete={authMode === 'signup' ? 'new-password' : 'current-password'} minLength="8" value={password} onChange={e => setPassword(e.target.value)} required /></label>
       {error && <p className="admin-error"><AlertCircle size={16}/> {error}</p>}
       <button className="button" disabled={authBusy}>{authBusy ? 'Please wait…' : authMode === 'signup' ? 'Create customer account' : 'Sign in'} <ArrowRight size={16}/></button>
     </form>
     <p style={{ marginTop: 18 }}>{authMode === 'signup' ? 'Already registered?' : 'New to Malvis Express?'} <button type="button" className="admin-plain-button" onClick={() => { setAuthMode(authMode === 'signup' ? 'signin' : 'signup'); setError('') }}>{authMode === 'signup' ? 'Sign in' : 'Create an account'}</button></p>
-    <small>Phone confirmation must be disabled in Supabase for the requested password-only, no-OTP registration flow. Without confirmation, the phone number is not verified.</small>
+    <small>Your phone number is used as your login ID. Use the full international format for numbers outside Nigeria. Phone ownership is not verified by SMS.</small>
   </section>
 
   return <section className="admin-main" style={{ maxWidth: 1000, margin: '32px auto', padding: '0 18px' }}>
