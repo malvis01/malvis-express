@@ -70,18 +70,19 @@ Before public launch, add persistent rate limiting and abuse monitoring to the t
 - Shipment enquiry form: configured for Netlify Forms; it receives submissions only after deployment and Netlify detects the form.
 - Public tracking: Edge Function deployed to the new Supabase project; test with a real admin-created shipment after admin provisioning.
 - Admin dashboard: phone/password sign-in, admin-role verification, shipment creation, search, status updates and journey events are implemented in the frontend.
-- Customer registration and personal shipment management: not yet implemented in the frontend.
-- Payments and live courier integrations: not connected. No payment or shipment booking is represented as confirmed.
+- Customer registration and personal shipment management: implemented with phone/password authentication, shipment requests and private shipment views.
+- Manual bank-transfer payments: admin quote and bank instructions, customer receipt upload to private Storage, admin-only verification/rejection, and tracking-code release after confirmation.
+- Automatic payment gateways and live courier integrations: not connected; bank transfers are verified manually.
 
 ## Before launch
 
 1. Add the two frontend environment variables to Netlify and redeploy.
 2. Enable and test phone/password authentication.
 3. Provision the first administrator securely.
-4. Create and test a shipment end-to-end, including the public tracking lookup.
+4. Test customer signup, shipment request, admin quote, bank instructions, receipt upload, admin verification, tracking-code release and public tracking end-to-end.
 5. Add persistent rate limiting and abuse monitoring to public tracking.
-6. Verify GitHub Actions build checks and Netlify deployment.
-7. Complete customer accounts, pricing, payments and carrier integrations before accepting paid bookings.
+6. Verify GitHub Actions build checks and the latest Netlify deploy preview.
+7. Configure real bank account details and support procedures before accepting customer transfers.
 
 ## Security
 
