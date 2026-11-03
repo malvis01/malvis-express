@@ -180,7 +180,7 @@ export default function AdminDashboard({ onExit }) {
     const { error: eventError } = await supabase.from('shipment_events').insert({
       delivery_id: data.id,
       status: 'booking_created',
-      description: 'Shipment record created.',
+      description: 'Shipment registered at the pickup point.',
       location_label: form.pickup_location_label || null,
       recorded_by: user.id,
     })
@@ -196,6 +196,10 @@ export default function AdminDashboard({ onExit }) {
   async function updateShipment(event) {
     event.preventDefault()
     if (!supabase || !user || !editing) return
+    if (!eventForm.location_label.trim()) {
+      setError('Enter the shipment location for this tracking update.')
+      return
+    }
     setSaving(true)
     setError('')
     setNotice('')
@@ -271,7 +275,7 @@ export default function AdminDashboard({ onExit }) {
       {editing && <section className="admin-form-card"><div className="admin-form-title"><div><h2>Update {editing.tracking_number}</h2><p>Each update is saved to the shipment timeline.</p></div><button className="admin-plain-button" onClick={() => setEditing(null)}>Close</button></div>
         <form onSubmit={updateShipment}><div className="admin-form-grid">
           <label>New status<select value={eventForm.status} onChange={(e) => setEventForm({ ...eventForm, status: e.target.value })}>{statuses.map(([value,label]) => <option key={value} value={value}>{label}</option>)}</select></label>
-          <label>Current location<input value={eventForm.location_label} onChange={(e) => setEventForm({ ...eventForm, location_label: e.target.value })} placeholder="e.g. Lagos sorting centre" /></label>
+          <label>Current location<input value={eventForm.location_label} onChange={(e) => setEventForm({ ...eventForm, location_label: e.target.value })} placeholder="e.g. Lagos sorting centre" required /></label>
           <label className="admin-full">Update note<textarea rows="2" value={eventForm.description} onChange={(e) => setEventForm({ ...eventForm, description: e.target.value })} placeholder="Optional progress note" /></label>
         </div><button className="button" type="submit" disabled={saving}>{saving ? 'Saving update…' : 'Save shipment update'} <CheckCircle2 size={16} /></button></form>
       </section>}
