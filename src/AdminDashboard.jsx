@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { ArrowLeft, LogOut, Package, RefreshCw, Search, Plus, CheckCircle2, AlertCircle, Truck, Clock3 } from 'lucide-react'
+import { ArrowLeft, ArrowRight, LogOut, Package, RefreshCw, Search, Plus, CheckCircle2, AlertCircle, Truck, Clock3 } from 'lucide-react'
 import { supabase } from './lib/supabase'
 import AdminPayments from './AdminPayments.jsx'
+
+const ADMIN_AUTH_PHONE = '+2348103136054' // Internal Supabase login identifier; password remains user-entered.
 
 const statuses = [
   ['booking_created', 'Shipment request created'],
@@ -35,7 +37,6 @@ function dateLabel(value) {
 }
 
 export default function AdminDashboard({ onExit }) {
-  const [phone, setPhone] = useState('')
   const [password, setPassword] = useState('')
   const [authState, setAuthState] = useState('checking')
   const [authError, setAuthError] = useState('')
@@ -131,7 +132,7 @@ export default function AdminDashboard({ onExit }) {
     setAuthState('signing')
     setAuthError('')
     const { data, error: loginError } = await supabase.auth.signInWithPassword({
-      phone: phone.trim(), password,
+      phone: ADMIN_AUTH_PHONE, password,
     })
     if (loginError || !data.user) {
       setAuthState('login')
@@ -235,8 +236,7 @@ export default function AdminDashboard({ onExit }) {
       <header className="admin-top"><a className="brand" href="#home" onClick={onExit}><span className="brand-mark"><Package size={22} /></span><span>MALVIS<span className="brand-light"> EXPRESS</span></span></a><a className="admin-back" href="#home" onClick={onExit}><ArrowLeft size={16} /> Back to website</a></header>
       <section className="admin-login-wrap"><form className="admin-login-card" onSubmit={signIn}>
         <span className="admin-lock"><Package size={25} /></span><div className="eyebrow dark-eyebrow">SECURE OPERATIONS</div>
-        <h1>Administrator<br /><em>sign in.</em></h1><p>Use your authorised Malvis Express administrator phone number and password.</p>
-        <label>Phone number<input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+234…" autoComplete="username" required /></label>
+        <h1>Administrator<br /><em>sign in.</em></h1><p>Enter your administrator password to access Malvis Express operations.</p>
         <label>Password<input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Your password" autoComplete="current-password" required /></label>
         {authError && <div className="admin-error"><AlertCircle size={16} /> {authError}</div>}
         <button className="button admin-submit" type="submit">Sign in to dashboard <ArrowRight size={16} /></button>
