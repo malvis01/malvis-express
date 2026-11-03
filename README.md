@@ -31,16 +31,19 @@ Never place a Supabase service-role or secret key in frontend environment variab
 - Shipment enquiry form: configured for Netlify Forms; it receives submissions only after the site is deployed and Netlify detects the form.
 - Public shipment tracking: connected to the `public-shipment-tracking` Supabase Edge Function. It requires the tracking number and the last four digits of the recipient phone number. The response intentionally excludes contact details, addresses, payment information and free-form event descriptions.
 - Tracking visibility: only shipments with `tracking_code_issued = true` can be looked up. Shipment records must have a recipient phone number for verification.
+- Administrator dashboard: protected phone/password sign-in, admin-role verification, shipment creation, search, status updates and shipment timeline entries are implemented. The first administrator account still needs to be provisioned securely.
+- Guest shipment records are supported for admin-created bookings; a customer account can be linked later.
 - Customer registration, sign-in and personal shipment management: intentionally scheduled for a later development stage.
 - Payments and live courier integrations: not connected; no payment or shipment booking is represented as confirmed.
 
 ## Before launch
 
-1. Verify the Edge Function using a real test shipment after the admin shipment workflow can issue a tracking number and save the recipient phone.
-2. Add production-grade rate limiting and abuse monitoring to the public tracking endpoint.
-3. Run `npm install` and `npm run build` (also checked by GitHub Actions on pushes to `main`).
-4. Deploy the site to Netlify and verify a test enquiry appears in the Netlify Forms dashboard.
-5. Complete customer authentication, admin shipment operations, pricing and payment-provider integration before accepting paid bookings.
+1. Provision the first administrator account in Supabase Auth and assign its user ID the `admin` role in `public.user_roles`.
+2. Sign in at the website's Admin access page and create a real test shipment.
+3. Add production-grade rate limiting and abuse monitoring to the public tracking endpoint.
+4. Run `npm install` and `npm run build` (also checked by GitHub Actions on pushes to `main`).
+5. Deploy the site to Netlify and verify a test enquiry appears in the Netlify Forms dashboard.
+6. Complete customer authentication, admin shipment operations, pricing and payment-provider integration before accepting paid bookings.
 
 ## Security notes
 
