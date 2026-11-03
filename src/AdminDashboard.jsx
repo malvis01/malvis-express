@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { ArrowLeft, ArrowRight, LogOut, Package, RefreshCw, Search, Plus, CheckCircle2, AlertCircle, Truck, Clock3 } from 'lucide-react'
 import { supabase } from './lib/supabase'
+import { phoneToAuthEmail } from './lib/phoneAuth'
 import AdminPayments from './AdminPayments.jsx'
 
 const ADMIN_AUTH_PHONE = '+2348103136054' // Internal Supabase login identifier; password remains user-entered.
@@ -132,7 +133,7 @@ export default function AdminDashboard({ onExit }) {
     setAuthState('signing')
     setAuthError('')
     const { data, error: loginError } = await supabase.auth.signInWithPassword({
-      phone: ADMIN_AUTH_PHONE, password,
+      email: phoneToAuthEmail(ADMIN_AUTH_PHONE), password,
     })
     if (loginError || !data.user) {
       setAuthState('login')
