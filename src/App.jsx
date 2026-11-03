@@ -4,7 +4,7 @@ import {
   Clock3, Menu, X, Truck, Plane, Ship, CheckCircle2, Mail, Phone,
   Send, Compass, Boxes, FileText
 } from 'lucide-react'
-import { isSupabaseConfigured } from './lib/supabase'
+import { isSupabaseConfigured, supabase } from './lib/supabase'
 
 const services = [
   { icon: Package, title: 'Parcels & documents', text: 'For personal packages, important documents and everyday deliveries.' },
@@ -18,10 +18,55 @@ const initialForm = { name: '', email: '', phone: '', origin: '', destination: '
 function App() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [trackingCode, setTrackingCode] = useState('')
+  const [trackingPhone, setTrackingPhone] = useState('')
+  const [trackingState, setTrackingState] = useState('idle')
+  const [trackingResult, setTrackingResult] = useState(null)
+  const [trackingError, setTrackingError] = useState('')
   const [form, setForm] = useState(initialForm)
   const [formState, setFormState] = useState('idle')
 
   const closeMenu = () => setMenuOpen(false)
+  const statusLabels = {
+    booking_created: 'Shipment request created',
+    awaiting_payment: 'Awaiting payment',
+    payment_confirmed: 'Payment confirmed',
+    rider_assigned: 'Courier assigned',
+    package_picked_up: 'Package picked up',
+    at_sorting_facility: 'At sorting facility',
+    in_transit: 'In transit',
+    customs_clearance: 'Customs clearance',
+    out_for_delivery: 'Out for delivery',
+    delivered: 'Delivered',
+    cancelled: 'Cancelled',
+    failed_delivery: 'Delivery attempt unsuccessful',
+    returned: 'Returned',
+    delayed: 'Delayed',
+    held_for_inspection: 'Held for inspection',
+  }
+  const formatDate = (value) => value
+    ? new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(value))
+    : 'Update time unavailable'
+  async function trackShipment(event) {
+    event.preventDefault()
+    setTrackingState('loading')
+    setTrackingResult(null)
+    setTrackingError('')
+    if (!supabase) {
+      setTrackingState('error')
+      setTrackingError('Tracking service is not configured yet. Please try again later.')
+      return
+    }
+    const { data, error } = await supabase.functions.invoke('public-shipment-tracking', {
+      body: { tracking_number: trackingCode, phone_last4: trackingPhone },
+    })
+    if (error || data?.error) {
+      setTrackingState('error')
+      setTrackingError(data?.error || 'We could not complete the tracking lookup. Please try again.')
+      return
+    }
+    setTrackingResult(data)
+    setTrackingState('success')
+  }
   const updateForm = (event) => setForm({ ...form, [event.target.name]: event.target.value })
 
   async function submitEnquiry(event) {
@@ -102,12 +147,24 @@ function App() {
       </section>
 
       <section className="tracking-section" id="tracking">
-        <div><div className="eyebrow dark-eyebrow">SHIPMENT TRACKING</div><h2>Every delivery has a story.<br /><em>Follow yours.</em></h2></div>
-        <form className="tracking-form" onSubmit={(event) => { event.preventDefault(); document.getElementById('tracking-note')?.scrollIntoView({ behavior: 'smooth', block: 'center' }) }}>
-          <label htmlFor="tracking-code">Have a Malvis Express tracking number?</label>
-          <div className="tracking-input"><Package size={19} /><input id="tracking-code" value={trackingCode} onChange={(e) => setTrackingCode(e.target.value)} placeholder="Enter tracking number" required /><button type="submit" aria-label="Continue"><ArrowRight /></button></div>
-          <small id="tracking-note">Online tracking is being connected. Tracking numbers cannot be looked up yet.</small>
-        </form>
+        <div><div className="eyebrow dark-eyebrow">SHIPMENT TRACKING</div><h2>Every delivery has a story.<br /><em>Follow yours.</em></h2><p className="tracking-intro">Enter your tracking number and the last four digits of the recipient's phone number to view shipment progress.</p></div>
+        <div className="tracking-panel">
+          <form className="tracking-form" onSubmit={trackShipment}>
+            <label htmlFor="tracking-code">Malvis Express tracking number</label>
+            <div className="tracking-input"><Package size={19} /><input id="tracking-code" value={trackingCode} onChange={(e) => setTrackingCode(e.target.value.toUpperCase())} placeholder="MX-REQ-XXXXXXXXXX" autoComplete="off" required /><button type="submit" aria-label="Track shipment" disabled={trackingState === 'loading'}><ArrowRight /></button></div>
+            <label className="phone-last4-label" htmlFor="tracking-phone">Recipient phone — last four digits</label>
+            <div className="tracking-input"><Phone size={18} /><input id="tracking-phone" inputMode="numeric" maxLength="4" value={trackingPhone} onChange={(e) => setTrackingPhone(e.target.value.replace(/\\D/g, '').slice(0, 4))} placeholder="e.g. 4821" required /></div>
+            <button className="button track-submit" type="submit" disabled={trackingState === 'loading'}>{trackingState === 'loading' ? 'Checking shipment…' : 'Track shipment'} <ArrowRight size={16} /></button>
+            {trackingState === 'error' && <p className="tracking-feedback error">{trackingError}</p>}
+          </form>
+          {trackingState === 'success' && trackingResult && <div className="tracking-result">
+            <div className="result-heading"><span><CheckCircle2 size={17} /> Shipment found</span><strong>{trackingResult.shipment.tracking_number}</strong></div>
+            <div className="result-current"><small>CURRENT STATUS</small><strong>{statusLabels[trackingResult.shipment.status] || trackingResult.shipment.status}</strong><span>{trackingResult.shipment.delivery_type} · {trackingResult.shipment.service_scope}</span></div>
+            <div className="timeline"><strong>Shipment updates</strong>
+              {trackingResult.events.length ? trackingResult.events.map((item, index) => <div className="timeline-item" key={item.status + item.occurred_at}><i className={index === trackingResult.events.length - 1 ? 'timeline-dot active' : 'timeline-dot'} /><div><b>{statusLabels[item.status] || item.status}</b><small>{formatDate(item.occurred_at)}</small></div></div>) : <p className="timeline-empty">No progress updates have been recorded yet. Check again later.</p>}
+            </div>
+          </div>}
+        </div>
       </section>
 
       <section className="services-section" id="services">
