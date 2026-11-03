@@ -1,10 +1,11 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   ArrowRight, ArrowUpRight, Globe2, Package, MapPin, ShieldCheck,
   Clock3, Menu, X, Truck, Plane, Ship, CheckCircle2, Mail, Phone,
   Send, Compass, Boxes, FileText
 } from 'lucide-react'
 import { isSupabaseConfigured, supabase } from './lib/supabase'
+import AdminDashboard from './AdminDashboard.jsx'
 
 const services = [
   { icon: Package, title: 'Parcels & documents', text: 'For personal packages, important documents and everyday deliveries.' },
@@ -16,6 +17,12 @@ const services = [
 const initialForm = { name: '', email: '', phone: '', origin: '', destination: '', deliveryType: 'Parcel', message: '' }
 
 function App() {
+  const [adminMode, setAdminMode] = useState(window.location.hash === '#admin')
+  useEffect(() => {
+    const syncRoute = () => setAdminMode(window.location.hash === '#admin')
+    window.addEventListener('hashchange', syncRoute)
+    return () => window.removeEventListener('hashchange', syncRoute)
+  }, [])
   const [menuOpen, setMenuOpen] = useState(false)
   const [trackingCode, setTrackingCode] = useState('')
   const [trackingPhone, setTrackingPhone] = useState('')
@@ -86,6 +93,8 @@ function App() {
       setFormState('error')
     }
   }
+
+  if (adminMode) return <AdminDashboard onExit={() => { window.location.hash = '#home'; setAdminMode(false) }} />
 
   return (
     <main>
@@ -213,7 +222,7 @@ function App() {
         <span className="coming-label">Coming next</span>
       </section>
 
-      <footer><a className="brand footer-brand" href="#home"><span className="brand-mark"><Package size={20} /></span><span>MALVIS<span className="brand-light"> EXPRESS</span></span></a><span>© {new Date().getFullYear()} Malvis Express. Built to move what matters.</span><span className="footer-status"><i /> {isSupabaseConfigured ? 'Backend project connected' : 'Backend setup pending'}</span></footer>
+      <footer><a className="brand footer-brand" href="#home"><span className="brand-mark"><Package size={20} /></span><span>MALVIS<span className="brand-light"> EXPRESS</span></span></a><span>© {new Date().getFullYear()} Malvis Express. Built to move what matters.</span><span className="footer-status"><i /> {isSupabaseConfigured ? 'Backend project connected' : 'Backend setup pending'}</span><a className="admin-footer-link" href="#admin">Admin access</a></footer>
     </main>
   )
 }
