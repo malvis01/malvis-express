@@ -27,7 +27,7 @@ function App() {
   async function submitEnquiry(event) {
     event.preventDefault()
     setFormState('sending')
-    const payload = new URLSearchParams({ 'form-name': 'shipment-enquiry', ...form })
+    const payload = new URLSearchParams({ 'form-name': 'shipment-enquiry', 'bot-field': '', ...form })
     try {
       const response = await fetch('/', {
         method: 'POST',
