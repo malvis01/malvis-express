@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { ArrowLeft, ArrowRight, LogOut, Package, RefreshCw, Search, Plus, CheckCircle2, AlertCircle, Truck, Clock3 } from 'lucide-react'
 import { supabase } from './lib/supabase'
-import { phoneToAuthEmail } from './lib/phoneAuth'
 import AdminPayments from './AdminPayments.jsx'
 
-const ADMIN_AUTH_PHONE = '+2348103136054' // Internal Supabase login identifier; password remains user-entered.
+// The administrator email is an internal sign-in identifier; the page only asks for a password.
+const ADMIN_AUTH_EMAIL = 'malvisdabz@gmail.com'
 
 const statuses = [
   ['booking_created', 'Shipment request created'],
@@ -133,11 +133,11 @@ export default function AdminDashboard({ onExit }) {
     setAuthState('signing')
     setAuthError('')
     const { data, error: loginError } = await supabase.auth.signInWithPassword({
-      email: phoneToAuthEmail(ADMIN_AUTH_PHONE), password,
+      email: ADMIN_AUTH_EMAIL, password,
     })
     if (loginError || !data.user) {
       setAuthState('login')
-      setAuthError('Sign-in failed. Check the phone number and password.')
+      setAuthError('Sign-in failed. Check the administrator password and try again.')
       return
     }
     const allowed = await verifyAdmin(data.user)
