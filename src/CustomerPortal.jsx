@@ -17,6 +17,13 @@ const blank = {
   pickup_contact_name: '', pickup_contact_phone: '',
   dropoff_contact_name: '', dropoff_contact_phone: '', customer_note: '',
 }
+function toE164(value) {
+  const digits = String(value || '').replace(/\D/g, '')
+  if (digits.startsWith('0')) return '+234' + digits.slice(1)
+  if (digits.startsWith('234')) return '+' + digits
+  return String(value || '').trim()
+}
+
 const fieldStyle = { width: '100%', padding: '12px', border: '1px solid #d8dce2', borderRadius: '8px', marginTop: '6px', boxSizing: 'border-box' }
 const labelStyle = { display: 'block', marginBottom: '14px', fontWeight: 600, color: '#263243' }
 
@@ -56,8 +63,8 @@ export default function CustomerPortal() {
   async function authenticate(event) {
     event.preventDefault(); setAuthBusy(true); setError(''); setNotice('')
     const result = authMode === 'signup'
-      ? await supabase.auth.signUp({ phone: phone.trim(), password, options: { data: { display_name: displayName.trim() } } })
-      : await supabase.auth.signInWithPassword({ phone: phone.trim(), password })
+      ? await supabase.auth.signUp({ phone: toE164(phone), password, options: { data: { display_name: displayName.trim() } } })
+      : await supabase.auth.signInWithPassword({ phone: toE164(phone), password })
     setAuthBusy(false)
     if (result.error) { setError(result.error.message); return }
     if (result.data.user && !result.data.session) {
