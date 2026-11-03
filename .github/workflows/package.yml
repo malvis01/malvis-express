@@ -1,0 +1,62 @@
+name: Package Malvis Express
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install dependencies
+        run: npm install
+      - name: Build website
+        run: npm run build
+      - name: Create source and deploy packages
+        run: |
+          mkdir -p package-output
+          zip -r package-output/malvis-express-source.zip . \
+            -x ".git/*" "node_modules/*" "package-output/*"
+          cd dist
+          zip -r ../package-output/malvis-express-site.zip .
+          cd ..
+          cat > package-output/NETLIFY-SETUP.txt <<'EOF'
+          MALVIS EXPRESS - NETLIFY SETUP
+
+          SOURCE PACKAGE
+          1. Extract malvis-express-source.zip.
+          2. Import the malvis-express repository from GitHub in Netlify, or use the source folder with a supported Git workflow.
+          3. Build command: npm run build
+          4. Publish directory: dist
+          5. Set these environment variables in Netlify before deploying:
+             VITE_SUPABASE_URL
+             VITE_SUPABASE_PUBLISHABLE_KEY
+          6. Trigger a fresh deploy after setting the variables.
+
+          STATIC SITE PACKAGE
+          malvis-express-site.zip contains the current compiled static website.
+          It can be used for a static preview, but backend features require the
+          Supabase environment variables to be included at build time. Use the
+          source package with Netlify's build settings for the complete setup.
+
+          Do not add a Supabase service-role or secret key to frontend variables.
+          Customer login, admin account provisioning, payment collection and
+          carrier integrations are not yet production-ready.
+          EOF
+      - name: Upload ZIP packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: malvis-express-netlify-package
+          path: package-output/*
+          if-no-files-found: error
+          retention-days: 30
