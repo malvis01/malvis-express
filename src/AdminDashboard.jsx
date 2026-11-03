@@ -168,9 +168,9 @@ export default function AdminDashboard({ onExit }) {
     const insert = {
       ...form,
       customer_id: form.customer_id || null,
-      tracking_code_issued: true,
-      tracking_code_issued_at: new Date().toISOString(),
-      tracking_code_issued_by: user.id,
+      tracking_code_issued: false,
+      tracking_code_issued_at: null,
+      tracking_code_issued_by: null,
       status: 'booking_created',
     }
     delete insert.customer_id
@@ -267,8 +267,8 @@ export default function AdminDashboard({ onExit }) {
             <label>Recipient phone<input value={form.dropoff_contact_phone} onChange={(e) => setForm({ ...form, dropoff_contact_phone: e.target.value })} placeholder="+234…" required /></label>
             <label className="admin-full">Shipment description<textarea value={form.customer_note} onChange={(e) => setForm({ ...form, customer_note: e.target.value })} rows="3" placeholder="Package description, size, weight or handling notes" /></label>
           </div>
-          <p className="admin-hint">A tracking number will be generated automatically. Customers verify tracking with the last four digits of the recipient's phone.</p>
-          <button className="button" type="submit" disabled={saving}>{saving ? 'Creating shipment…' : 'Create shipment and issue tracking'} <ArrowRight size={16} /></button>
+          <p className="admin-hint">A tracking number will be generated automatically but stays private until payment is confirmed. Linked customers can pay through their portal; guest payments must be verified by an administrator.</p>
+          <button className="button" type="submit" disabled={saving}>{saving ? 'Creating shipment…' : 'Create shipment request'} <ArrowRight size={16} /></button>
         </form>
       </section>}
       {editing && <section className="admin-form-card"><div className="admin-form-title"><div><h2>Update {editing.tracking_number}</h2><p>Each update is saved to the shipment timeline.</p></div><button className="admin-plain-button" onClick={() => setEditing(null)}>Close</button></div>
