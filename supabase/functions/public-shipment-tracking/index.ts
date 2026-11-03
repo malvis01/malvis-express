@@ -1,0 +1,68 @@
+import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+};
+
+Deno.serve(async (req: Request) => {
+  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+  if (req.method !== "POST") {
+    return new Response(JSON.stringify({ error: "Method not allowed" }), {
+      status: 405, headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+
+  try {
+    const body = await req.json();
+    const trackingNumber = String(body?.tracking_number ?? "").trim().toUpperCase();
+    const phoneLast4 = String(body?.phone_last4 ?? "").replace(/\D/g, "");
+
+    if (!/^MX-REQ-[A-F0-9]{10}$/.test(trackingNumber) || !/^\d{4}$/.test(phoneLast4)) {
+      return new Response(JSON.stringify({ error: "Enter a valid tracking number and the recipient phone's last four digits." }), {
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const supabaseUrl = Deno.env.get("SUPABASE_URL");
+    const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? Deno.env.get("SUPABASE_SECRET_KEY");
+    if (!supabaseUrl || !serviceKey) throw new Error("Tracking service is not configured");
+
+    const headers = { apikey: serviceKey, Authorization: `Bearer ${serviceKey}` };
+    const shipmentUrl = new URL("/rest/v1/deliveries", supabaseUrl);
+    shipmentUrl.searchParams.set("select", "id,tracking_number,delivery_type,service_scope,status,tracking_code_issued,dropoff_contact_phone");
+    shipmentUrl.searchParams.set("tracking_number", `eq.${trackingNumber}`);
+    shipmentUrl.searchParams.set("tracking_code_issued", "eq.true");
+    shipmentUrl.searchParams.set("limit", "1");
+
+    const shipmentResponse = await fetch(shipmentUrl, { headers });
+    if (!shipmentResponse.ok) throw new Error("Tracking lookup failed");
+    const shipments = await shipmentResponse.json();
+    const shipment = shipments?.[0];
+    const actualLast4 = String(shipment?.dropoff_contact_phone ?? "").replace(/\D/g, "").slice(-4);
+
+    if (!shipment || actualLast4 !== phoneLast4) {
+      return new Response(JSON.stringify({ error: "We couldn't find a shipment matching those details." }), {
+        status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const eventsUrl = new URL("/rest/v1/shipment_events", supabaseUrl);
+    eventsUrl.searchParams.set("select", "status,description,location_label,occurred_at");
+    eventsUrl.searchParams.set("delivery_id", `eq.${shipment.id}`);
+    eventsUrl.searchParams.set("order", "occurred_at.asc");
+    const eventsResponse = await fetch(eventsUrl, { headers });
+    if (!eventsResponse.ok) throw new Error("Could not load shipment progress");
+    const events = await eventsResponse.json();
+
+    const { dropoff_contact_phone: _privatePhone, id: _privateId, ...publicShipment } = shipment;
+    return new Response(JSON.stringify({ shipment: publicShipment, events }), {
+      status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  } catch (error) {
+    return new Response(JSON.stringify({ error: "Tracking is temporarily unavailable. Please try again later." }), {
+      status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+});

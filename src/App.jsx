@@ -6,6 +6,7 @@ import {
 } from 'lucide-react'
 import { isSupabaseConfigured, supabase } from './lib/supabase'
 import AdminDashboard from './AdminDashboard.jsx'
+import CustomerPortal from './CustomerPortal.jsx'
 
 const services = [
   { icon: Package, title: 'Parcels & documents', text: 'For personal packages, important documents and everyday deliveries.' },
@@ -170,7 +171,7 @@ function App() {
             <div className="result-heading"><span><CheckCircle2 size={17} /> Shipment found</span><strong>{trackingResult.shipment.tracking_number}</strong></div>
             <div className="result-current"><small>CURRENT STATUS</small><strong>{statusLabels[trackingResult.shipment.status] || trackingResult.shipment.status}</strong><span>{trackingResult.shipment.delivery_type} · {trackingResult.shipment.service_scope}</span></div>
             <div className="timeline"><strong>Shipment updates</strong>
-              {trackingResult.events.length ? trackingResult.events.map((item, index) => <div className="timeline-item" key={item.status + item.occurred_at}><i className={index === trackingResult.events.length - 1 ? 'timeline-dot active' : 'timeline-dot'} /><div><b>{statusLabels[item.status] || item.status}</b><small>{formatDate(item.occurred_at)}</small></div></div>) : <p className="timeline-empty">No progress updates have been recorded yet. Check again later.</p>}
+              {trackingResult.events.length ? trackingResult.events.map((item, index) => <div className="timeline-item" key={item.status + item.occurred_at}><i className={index === trackingResult.events.length - 1 ? 'timeline-dot active' : 'timeline-dot'} /><div><b>{statusLabels[item.status] || item.status}</b>{item.location_label && <small>{item.location_label}</small>}{item.description && <small>{item.description}</small>}<small>{formatDate(item.occurred_at)}</small></div></div>) : <p className="timeline-empty">No progress updates have been recorded yet. Check again later.</p>}
             </div>
           </div>}
         </div>
@@ -216,11 +217,7 @@ function App() {
 
       <section className="about-section" id="about"><div className="about-icon"><Globe2 size={28} /></div><div><div className="eyebrow dark-eyebrow">BUILT TO CONNECT DISTANCES</div><h2>Moving goods.<br /><em>Bringing people closer.</em></h2></div><p>Malvis Express is being developed as a worldwide delivery and shipment management platform, bringing shipment enquiries, logistics coordination and tracking into one place.</p></section>
 
-      <section className="portal-section" id="account">
-        <div className="portal-icon"><FileText size={23} /></div>
-        <div><strong>Customer account portal</strong><p>Customer registration, sign-in and personal shipment management are planned for the next development stage.</p></div>
-        <span className="coming-label">Coming next</span>
-      </section>
+      <div id="account"><CustomerPortal /></div>
 
       <footer><a className="brand footer-brand" href="#home"><span className="brand-mark"><Package size={20} /></span><span>MALVIS<span className="brand-light"> EXPRESS</span></span></a><span>© {new Date().getFullYear()} Malvis Express. Built to move what matters.</span><span className="footer-status"><i /> {isSupabaseConfigured ? 'Backend project connected' : 'Backend setup pending'}</span><a className="admin-footer-link" href="#admin">Admin access</a></footer>
     </main>

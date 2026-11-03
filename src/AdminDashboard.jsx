@@ -1,6 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { ArrowLeft, LogOut, Package, RefreshCw, Search, Plus, CheckCircle2, AlertCircle, Truck, Clock3 } from 'lucide-react'
+import { ArrowLeft, ArrowRight, LogOut, Package, RefreshCw, Search, Plus, CheckCircle2, AlertCircle, Truck, Clock3 } from 'lucide-react'
 import { supabase } from './lib/supabase'
+import AdminPayments from './AdminPayments.jsx'
+
+// The administrator email is an internal sign-in identifier; the page only asks for a password.
+const ADMIN_AUTH_EMAIL = 'malvisdabz@gmail.com'
 
 const statuses = [
   ['booking_created', 'Shipment request created'],
@@ -34,7 +38,6 @@ function dateLabel(value) {
 }
 
 export default function AdminDashboard({ onExit }) {
-  const [phone, setPhone] = useState('')
   const [password, setPassword] = useState('')
   const [authState, setAuthState] = useState('checking')
   const [authError, setAuthError] = useState('')
@@ -49,6 +52,7 @@ export default function AdminDashboard({ onExit }) {
   const [notice, setNotice] = useState('')
   const [error, setError] = useState('')
   const [editing, setEditing] = useState(null)
+  const [paymentDeliveryId, setPaymentDeliveryId] = useState(null)
   const [eventForm, setEventForm] = useState({ status: 'in_transit', location_label: '', description: '' })
 
   const verifyAdmin = useCallback(async (candidate) => {
@@ -129,11 +133,11 @@ export default function AdminDashboard({ onExit }) {
     setAuthState('signing')
     setAuthError('')
     const { data, error: loginError } = await supabase.auth.signInWithPassword({
-      phone: phone.trim(), password,
+      email: ADMIN_AUTH_EMAIL, password,
     })
     if (loginError || !data.user) {
       setAuthState('login')
-      setAuthError('Sign-in failed. Check the phone number and password.')
+      setAuthError('Sign-in failed. Check the administrator password and try again.')
       return
     }
     const allowed = await verifyAdmin(data.user)
@@ -164,9 +168,9 @@ export default function AdminDashboard({ onExit }) {
     const insert = {
       ...form,
       customer_id: form.customer_id || null,
-      tracking_code_issued: true,
-      tracking_code_issued_at: new Date().toISOString(),
-      tracking_code_issued_by: user.id,
+      tracking_code_issued: false,
+      tracking_code_issued_at: null,
+      tracking_code_issued_by: null,
       status: 'booking_created',
     }
     delete insert.customer_id
@@ -233,8 +237,7 @@ export default function AdminDashboard({ onExit }) {
       <header className="admin-top"><a className="brand" href="#home" onClick={onExit}><span className="brand-mark"><Package size={22} /></span><span>MALVIS<span className="brand-light"> EXPRESS</span></span></a><a className="admin-back" href="#home" onClick={onExit}><ArrowLeft size={16} /> Back to website</a></header>
       <section className="admin-login-wrap"><form className="admin-login-card" onSubmit={signIn}>
         <span className="admin-lock"><Package size={25} /></span><div className="eyebrow dark-eyebrow">SECURE OPERATIONS</div>
-        <h1>Administrator<br /><em>sign in.</em></h1><p>Use your authorised Malvis Express administrator phone number and password.</p>
-        <label>Phone number<input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+234…" autoComplete="username" required /></label>
+        <h1>Administrator<br /><em>sign in.</em></h1><p>Enter your administrator password to access Malvis Express operations.</p>
         <label>Password<input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Your password" autoComplete="current-password" required /></label>
         {authError && <div className="admin-error"><AlertCircle size={16} /> {authError}</div>}
         <button className="button admin-submit" type="submit">Sign in to dashboard <ArrowRight size={16} /></button>
@@ -264,8 +267,8 @@ export default function AdminDashboard({ onExit }) {
             <label>Recipient phone<input value={form.dropoff_contact_phone} onChange={(e) => setForm({ ...form, dropoff_contact_phone: e.target.value })} placeholder="+234…" required /></label>
             <label className="admin-full">Shipment description<textarea value={form.customer_note} onChange={(e) => setForm({ ...form, customer_note: e.target.value })} rows="3" placeholder="Package description, size, weight or handling notes" /></label>
           </div>
-          <p className="admin-hint">A tracking number will be generated automatically. Customers verify tracking with the last four digits of the recipient's phone.</p>
-          <button className="button" type="submit" disabled={saving}>{saving ? 'Creating shipment…' : 'Create shipment and issue tracking'} <ArrowRight size={16} /></button>
+          <p className="admin-hint">A tracking number will be generated automatically but stays private until payment is confirmed. Linked customers can pay through their portal; guest payments must be verified by an administrator.</p>
+          <button className="button" type="submit" disabled={saving}>{saving ? 'Creating shipment…' : 'Create shipment request'} <ArrowRight size={16} /></button>
         </form>
       </section>}
       {editing && <section className="admin-form-card"><div className="admin-form-title"><div><h2>Update {editing.tracking_number}</h2><p>Each update is saved to the shipment timeline.</p></div><button className="admin-plain-button" onClick={() => setEditing(null)}>Close</button></div>
@@ -282,10 +285,11 @@ export default function AdminDashboard({ onExit }) {
             <div className="shipment-row-top"><div><strong>{item.tracking_number}</strong><small>{dateLabel(item.created_at)}</small></div><span className={'status-chip status-' + item.status}>{statuses.find(([value]) => value === item.status)?.[1] || item.status}</span></div>
             <div className="shipment-route"><span>{item.pickup_location_label || 'Pickup not set'}</span><ArrowRight size={15} /><span>{item.dropoff_location_label || 'Destination not set'}</span></div>
             <div className="shipment-meta"><span>{item.delivery_type} · {item.service_scope}</span><span>To: {item.dropoff_contact_name || 'Recipient'} · {item.dropoff_contact_phone || 'No phone'}</span><span>{item.tracking_code_issued ? 'Tracking issued' : 'Tracking not issued'}</span></div>
-            <div className="shipment-actions"><button className="admin-plain-button" onClick={() => { setEditing(item); setShowCreate(false); setEventForm({ status: item.status, location_label: '', description: '' }); setError(''); setNotice('') }}>Update status <ArrowRight size={14} /></button></div>
+            <div className="shipment-actions"><button className="admin-plain-button" onClick={() => { setEditing(item); setShowCreate(false); setEventForm({ status: item.status, location_label: '', description: '' }); setError(''); setNotice('') }}>Update status <ArrowRight size={14} /></button><button className="admin-plain-button" onClick={() => { setPaymentDeliveryId(paymentDeliveryId === item.id ? null : item.id); setEditing(null); setShowCreate(false); setError(''); setNotice('') }}>Quote / payments</button></div>
+            {paymentDeliveryId === item.id && <AdminPayments delivery={item} adminId={user.id} onUpdated={loadData} />}
           </article>)}</div>}
       </section>
-      <p className="admin-footnote"><Clock3 size={14} /> Admin changes are recorded in the database audit log. Payment collection and carrier integrations are not enabled yet.</p>
+      <p className="admin-footnote"><Clock3 size={14} /> Admin changes are recorded in the database audit log. Bank transfers are confirmed manually; automatic payment gateways and carrier integrations are not enabled.</p>
     </main>
   </div>
 }
