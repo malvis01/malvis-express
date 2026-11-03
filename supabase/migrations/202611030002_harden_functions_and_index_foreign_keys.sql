@@ -4,6 +4,11 @@ create index if not exists deliveries_tracking_code_issued_by_idx on public.deli
 create index if not exists shipment_events_recorded_by_idx on public.shipment_events(recorded_by);
 create index if not exists audit_logs_actor_id_idx on public.audit_logs(actor_id);
 
--- This pre-existing helper was created by project setup and is not part of the app.
--- It must not be callable by public API roles.
-revoke execute on function public.rls_auto_enable() from public, anon, authenticated;
+-- Some Supabase projects may already contain this setup helper; only harden it if present.
+do $$
+begin
+  if to_regprocedure('public.rls_auto_enable()') is not null then
+    execute 'revoke execute on function public.rls_auto_enable() from public, anon, authenticated';
+  end if;
+end;
+$$;
