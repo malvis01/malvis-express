@@ -49,24 +49,50 @@ export default function AdminPayments({ delivery, adminId, onUpdated }) {
   }
   async function review(proof, status) {
     setBusy(true); setError(''); setNotice('')
-    const { error: reviewError } = await supabase.from('payment_proofs').update({
-      status, reviewed_by: adminId, reviewed_at: new Date().toISOString(),
-      admin_note: status === 'confirmed' ? 'Transfer verified by Malvis Express.' : 'Please contact Malvis Express for assistance and submit valid evidence.',
-    }).eq('id', proof.id)
-    if (reviewError) { setError(reviewError.message); setBusy(false); return }
     if (status === 'confirmed') {
       const { error: deliveryError } = await supabase.from('deliveries').update({
         status: 'payment_confirmed', tracking_code_issued: true,
         tracking_code_issued_at: new Date().toISOString(), tracking_code_issued_by: adminId,
       }).eq('id', delivery.id)
-      if (deliveryError) setError('Proof reviewed but shipment update failed: ' + deliveryError.message)
-      else {
-        await supabase.from('shipment_events').insert({ delivery_id: delivery.id, status: 'payment_confirmed', description: 'Payment verified. Tracking number issued: ' + delivery.tracking_number, recorded_by: adminId })
-        setNotice('Payment confirmed. Tracking number ' + delivery.tracking_number + ' is now issued.')
-      }
+      if (deliveryError) { setError('Could not confirm payment or release tracking: ' + deliveryError.message); setBusy(false); return }
+    }
+    const { error: reviewError } = await supabase.from('payment_proofs').update({
+      status, reviewed_by: adminId, reviewed_at: new Date().toISOString(),
+      admin_note: status === 'confirmed' ? 'Transfer verified by Malvis Express.' : 'Please contact Malvis Express for assistance and submit valid evidence.',
+    }).eq('id', proof.id)
+    if (reviewError) {
+      setError(status === 'confirmed'
+        ? 'Shipment is marked paid and tracking is released, but the receipt review record could not be updated. Refresh and retry the review.'
+        : reviewError.message)
+      setBusy(false)
+      onUpdated?.()
+      return
+    }
+    if (status === 'confirmed') {
+      const { error: eventError } = await supabase.from('shipment_events').insert({ delivery_id: delivery.id, status: 'payment_confirmed', description: 'Payment verified. Tracking number issued: ' + delivery.tracking_number, recorded_by: adminId })
+      if (eventError) setError('Payment was confirmed, but the timeline event could not be saved: ' + eventError.message)
+      else setNotice('Payment confirmed. Tracking number ' + delivery.tracking_number + ' is now issued.')
     } else setNotice('Payment evidence rejected. The customer can submit a new receipt.')
     const { data } = await supabase.from('payment_proofs').select('*').eq('delivery_id', delivery.id).order('created_at', { ascending: false })
     setProofs(data || []); onUpdated?.(); setBusy(false)
+  }
+  async function confirmGuestPayment() {
+    if (!window.confirm('Confirm that you have independently verified this guest shipment payment and release its tracking number?')) return
+    setBusy(true); setError(''); setNotice('')
+    const { error: updateError } = await supabase.from('deliveries').update({
+      status: 'payment_confirmed', tracking_code_issued: true,
+      tracking_code_issued_at: new Date().toISOString(), tracking_code_issued_by: adminId,
+    }).eq('id', delivery.id)
+    if (updateError) { setError(updateError.message); setBusy(false); return }
+    const { error: eventError } = await supabase.from('shipment_events').insert({
+      delivery_id: delivery.id, status: 'payment_confirmed',
+      description: 'Guest payment independently verified by an administrator. Tracking number issued.',
+      recorded_by: adminId,
+    })
+    if (eventError) setError('Payment confirmed and tracking released, but the timeline event could not be saved: ' + eventError.message)
+    else setNotice('Guest payment confirmed. Tracking number ' + delivery.tracking_number + ' is now issued.')
+    onUpdated?.()
+    setBusy(false)
   }
   async function openReceipt(path) {
     const { data, error: linkError } = await supabase.storage.from('payment-proofs').createSignedUrl(path, 300)
@@ -86,6 +112,11 @@ export default function AdminPayments({ delivery, adminId, onUpdated }) {
       <label>Payment reference<input style={field} value={form.payment_reference} onChange={e=>setForm({...form,payment_reference:e.target.value})}/></label>
       <label className="admin-full">Message to customer<textarea style={field} rows="2" value={form.customer_message} onChange={e=>setForm({...form,customer_message:e.target.value})}/></label>
     </div><button className="button" disabled={busy}><Save size={16}/> {busy ? 'Saving…' : 'Save and send payment instructions'}</button></form>
+    {!delivery.customer_id && !delivery.tracking_code_issued && <div style={{ marginTop: 18, padding: 14, border: '1px solid #e3e7ed', borderRadius: 8 }}>
+      <strong>Guest shipment payment</strong>
+      <p style={{ fontSize: 12, color: '#667085' }}>After independently checking the transfer outside the platform, an administrator can record the payment and release the tracking number here.</p>
+      <button type="button" className="button" disabled={busy || !delivery.quoted_total} onClick={confirmGuestPayment}>Confirm verified guest payment and issue tracking</button>
+    </div>}
     <div style={{ marginTop: 22 }}><h3>Submitted payment evidence</h3>
       {!proofs.length ? <p>No receipt submitted yet.</p> : proofs.map(proof=><div key={proof.id} style={{ padding: 12, border: '1px solid #e3e7ed', borderRadius: 8, marginTop: 10 }}>
         <strong>{proof.status.toUpperCase()}</strong><p>{proof.transaction_reference || 'No transaction reference'} · {new Date(proof.created_at).toLocaleString()}</p>
