@@ -20,3 +20,19 @@ jobs:
         run: npm install
       - name: Build website
         run: npm run build
+
+      - name: Package source and static site
+        run: |
+          zip -r malvis-express-source.zip . -x ".git/*" "node_modules/*" "malvis-express-source.zip"
+          cd dist
+          zip -r ../malvis-express-site.zip .
+          cd ..
+      - name: Upload Netlify ZIP packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: malvis-express-netlify-package
+          path: |
+            malvis-express-source.zip
+            malvis-express-site.zip
+          if-no-files-found: error
+          retention-days: 30
