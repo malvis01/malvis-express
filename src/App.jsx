@@ -6,6 +6,7 @@ import {
 } from 'lucide-react'
 import { isSupabaseConfigured, supabase } from './lib/supabase'
 import AdminDashboard from './AdminDashboard.jsx'
+import CustomerPortal from './CustomerPortal.jsx'
 
 const services = [
   { icon: Package, title: 'Parcels & documents', text: 'For personal packages, important documents and everyday deliveries.' },
@@ -18,8 +19,12 @@ const initialForm = { name: '', email: '', phone: '', origin: '', destination: '
 
 function App() {
   const [adminMode, setAdminMode] = useState(window.location.hash === '#admin')
+  const [customerMode, setCustomerMode] = useState(window.location.hash === '#account')
   useEffect(() => {
-    const syncRoute = () => setAdminMode(window.location.hash === '#admin')
+    const syncRoute = () => {
+      setAdminMode(window.location.hash === '#admin')
+      setCustomerMode(window.location.hash === '#account')
+    }
     window.addEventListener('hashchange', syncRoute)
     return () => window.removeEventListener('hashchange', syncRoute)
   }, [])
@@ -94,7 +99,8 @@ function App() {
     }
   }
 
-  if (adminMode) return <AdminDashboard onExit={() => { window.location.hash = '#home'; setAdminMode(false) }} />
+  if (adminMode) return <AdminDashboard onExit={() => { window.location.hash = '#home'; setAdminMode(false); setCustomerMode(false) }} />
+  if (customerMode) return <CustomerPortal onExit={() => { window.location.hash = '#home'; setCustomerMode(false); setAdminMode(false) }} />
 
   return (
     <main>
@@ -114,8 +120,8 @@ function App() {
           <a href="#contact" onClick={closeMenu}>Contact</a>
         </nav>
         <div className="nav-actions">
-          <a className="login-link" href="#account" onClick={(event) => { event.preventDefault(); document.getElementById('account')?.scrollIntoView({ behavior: 'smooth' }) }}>Customer portal</a>
-          <a className="button button-small" href="#contact">Request a quote <ArrowUpRight size={16} /></a>
+          <a className="login-link nav-admin-link" href="#admin" onClick={closeMenu}>Admin login</a>
+          <a className="button button-small" href="#account" onClick={closeMenu}>Customer login <ArrowUpRight size={15} /></a>
         </div>
       </header>
 
@@ -218,8 +224,8 @@ function App() {
 
       <section className="portal-section" id="account">
         <div className="portal-icon"><FileText size={23} /></div>
-        <div><strong>Customer account portal</strong><p>Customer registration, sign-in and personal shipment management are planned for the next development stage.</p></div>
-        <span className="coming-label">Coming next</span>
+        <div><strong>Customer account portal</strong><p>Sign in with your phone number and password, create an account, submit shipment requests and follow your delivery progress.</p></div>
+        <a className="portal-action" href="#account">Customer login <ArrowRight size={15} /></a>
       </section>
 
       <footer><a className="brand footer-brand" href="#home"><span className="brand-mark"><Package size={20} /></span><span>MALVIS<span className="brand-light"> EXPRESS</span></span></a><span>© {new Date().getFullYear()} Malvis Express. Built to move what matters.</span><span className="footer-status"><i /> {isSupabaseConfigured ? 'Backend project connected' : 'Backend setup pending'}</span><a className="admin-footer-link" href="#admin">Admin access</a></footer>
