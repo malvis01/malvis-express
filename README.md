@@ -34,17 +34,19 @@ Never place a Supabase service-role or secret key in frontend environment variab
 - Administrator dashboard: password-only sign-in for the existing owner-provisioned admin account (Supabase Auth uses the fixed account email behind the scenes) and database admin-role verification. Admins can create shipments, issue tracking numbers, search shipments and customers, and see the latest recorded package location.
 - Shipment progress: admin status and location changes are written through an admin-only, security-invoker database function so the shipment status and public timeline event commit atomically. Updates are audit logged.
 - Guest shipment records are supported for admin-created bookings; a customer account can be linked later.
-- Customer registration, sign-in and personal shipment management: intentionally scheduled for a later development stage.
+- Customer portal: visible Customer Login / Create Account entry points; customers register and sign in with phone number + password, submit shipment requests, and view only their own shipment records and latest location updates. Phone numbers are used as login identifiers through the existing `@phone.malvis-express.invalid` account pattern; they are not SMS-verified.
+- Customer registration: the `customer-register` Edge Function creates accounts using the server-side Supabase service role, marks only the synthetic login email as confirmed, and applies a five-attempt-per-IP-per-hour throttle using hashed IP identifiers. The service-role key is never sent to the browser.
+- Tracking code issuance: a database insert trigger generates unique request tracking numbers. Admins can issue a tracking code for customer requests from the admin dashboard.
 - Payments and live courier integrations: not connected; no payment or shipment booking is represented as confirmed.
 
 ## Before launch
 
 1. The owner administrator account and its `admin` role are already provisioned in the connected Supabase project.
-2. Sign in at the website's Admin access page using the administrator account password and create a real test shipment. The sign-in screen does not ask for a phone number.
+2. Use the visible Admin login link and sign in with the existing owner administrator password. Use Customer login to create a test customer account with a phone number in international format and a password of at least eight characters.
 3. Add production-grade rate limiting and abuse monitoring to the public tracking endpoint before broad public launch.
 4. Run `npm install` and `npm run build` (also checked by GitHub Actions on pushes to `main`).
 5. Deploy the site to Netlify and verify a test enquiry appears in the Netlify Forms dashboard.
-6. Complete customer registration and personal shipment management, pricing, payment-provider integration and live carrier connections before accepting paid bookings.
+6. Add phone ownership verification (SMS OTP) if phone-number ownership must be proven; the current password-only flow deliberately does not verify phone ownership. Complete pricing, payment-provider integration and live carrier connections before accepting paid bookings.
 
 ## Security notes
 
