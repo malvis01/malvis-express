@@ -19,6 +19,9 @@ jobs:
       - name: Install dependencies
         run: npm install
       - name: Build website
+        env:
+          VITE_SUPABASE_URL: https://pgkkojkcbjvhbtcqccmu.supabase.co
+          VITE_SUPABASE_PUBLISHABLE_KEY: sb_publishable_t_NZiJ5RwbAk3d2j7IfD2Q_jcS9l4rt
         run: npm run build
 
       - name: Package source and static site
