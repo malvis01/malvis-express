@@ -213,6 +213,18 @@ export default function AdminDashboard({ onExit }) {
     await loadData()
   }
 
+  async function issueTrackingCode(item) {
+    if (!supabase || !user || item.tracking_code_issued) return
+    setSaving(true)
+    setError('')
+    setNotice('')
+    const { data, error: issueError } = await supabase.rpc('admin_issue_tracking_code', { p_delivery_id: item.id })
+    if (issueError) setError('Could not issue tracking code: ' + issueError.message)
+    else setNotice('Tracking number issued for shipment: ' + data)
+    setSaving(false)
+    await loadData()
+  }
+
   async function updateShipment(event) {
     event.preventDefault()
     if (!supabase || !user || !editing) return
@@ -293,7 +305,7 @@ export default function AdminDashboard({ onExit }) {
             <div className="shipment-row-top"><div><strong>{item.tracking_number}</strong><small>{dateLabel(item.created_at)}</small></div><span className={'status-chip status-' + item.status}>{statuses.find(([value]) => value === item.status)?.[1] || item.status}</span></div>
             <div className="shipment-route"><span>{item.pickup_location_label || 'Pickup not set'}</span><ArrowRight size={15} /><span>{item.dropoff_location_label || 'Destination not set'}</span></div>
             <div className="shipment-meta"><span>{item.delivery_type} · {item.service_scope}</span><span>To: {item.dropoff_contact_name || 'Recipient'} · {item.dropoff_contact_phone || 'No phone'}</span><span>Current location: {latestEvents[item.id]?.location_label || item.pickup_location_label || 'Not updated'}</span><span>{item.tracking_code_issued ? 'Tracking issued' : 'Tracking not issued'}</span></div>
-            <div className="shipment-actions"><button className="admin-plain-button" onClick={() => { setEditing(item); setShowCreate(false); setEventForm({ status: item.status, location_label: latestEvents[item.id]?.location_label || item.pickup_location_label || '', description: '' }); setError(''); setNotice('') }}>Update status <ArrowRight size={14} /></button></div>
+            <div className="shipment-actions">{!item.tracking_code_issued && <button className="admin-plain-button" onClick={() => issueTrackingCode(item)} disabled={saving}><CheckCircle2 size={14} /> Issue tracking number</button>}<button className="admin-plain-button" onClick={() => { setEditing(item); setShowCreate(false); setEventForm({ status: item.status, location_label: latestEvents[item.id]?.location_label || item.pickup_location_label || '', description: '' }); setError(''); setNotice('') }}>Update status <ArrowRight size={14} /></button></div>
           </article>)}</div>}
       </section>
       <p className="admin-footnote"><Clock3 size={14} /> Admin changes are recorded in the database audit log. Payment collection and carrier integrations are not enabled yet.</p>
