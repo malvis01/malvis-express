@@ -119,6 +119,7 @@ export default function CustomerPortal({ onExit }) {
       if (!active) return
       if (session?.user) {
         setUser(session.user)
+        setDisplayName(session.user.user_metadata?.display_name || '')
         setAuthState('ready')
       } else {
         setUser(null)
@@ -173,7 +174,7 @@ export default function CustomerPortal({ onExit }) {
         }
       }
     } else {
-      const { data, error } = await supabase.auth.signInWithPassword({ phone: phoneNumber, password })
+      const { data, error } = await supabase.auth.signInWithPassword({ email: loginEmailForPhone(phoneNumber), password })
       if (error) setAuthError('Login failed. Check your phone number and password.')
       else if (data.user) await acceptCustomerSession(data.user)
     }
