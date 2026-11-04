@@ -15,7 +15,7 @@ Worldwide delivery and shipment management platform.
 1. Install Node.js 20.19+ or 22.12+.
 2. Run `npm install`.
 3. Copy `.env.example` to `.env`.
-4. Add the Supabase project URL and publishable key.
+4. The example file is prefilled with this project's public URL and publishable key; these are safe for browser use.
 5. Run `npm run dev`.
 
 ## Environment variables
@@ -39,7 +39,7 @@ Never place a Supabase service-role or secret key in frontend environment variab
 
 ## Before launch
 
-1. Provision the first administrator account in Supabase Auth and assign its user ID the `admin` role in `public.user_roles`.
+1. The owner administrator account and its `admin` role are already provisioned in the connected Supabase project.
 2. Sign in at the website's Admin access page using the administrator account password and create a real test shipment. The sign-in screen does not ask for a phone number.
 3. Add production-grade rate limiting and abuse monitoring to the public tracking endpoint before broad public launch.
 4. Run `npm install` and `npm run build` (also checked by GitHub Actions on pushes to `main`).
