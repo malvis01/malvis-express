@@ -21,6 +21,9 @@ jobs:
       - name: Install dependencies
         run: npm install
       - name: Build website
+        env:
+          VITE_SUPABASE_URL: https://pgkkojkcbjvhbtcqccmu.supabase.co
+          VITE_SUPABASE_PUBLISHABLE_KEY: sb_publishable_t_NZiJ5RwbAk3d2j7IfD2Q_jcS9l4rt
         run: npm run build
       - name: Create source and deploy packages
         run: |
@@ -33,25 +36,30 @@ jobs:
           cat > package-output/NETLIFY-SETUP.txt <<'EOF'
           MALVIS EXPRESS - NETLIFY SETUP
 
-          SOURCE PACKAGE
-          1. Extract malvis-express-source.zip.
-          2. Import the malvis-express repository from GitHub in Netlify, or use the source folder with a supported Git workflow.
-          3. Build command: npm run build
-          4. Publish directory: dist
-          5. Set these environment variables in Netlify before deploying:
-             VITE_SUPABASE_URL
-             VITE_SUPABASE_PUBLISHABLE_KEY
-          6. Trigger a fresh deploy after setting the variables.
+          MANUAL NETLIFY DEPLOY
+          1. Extract malvis-express-site.zip.
+          2. In Netlify, open Add new site > Deploy manually.
+          3. Drag the extracted folder contents (index.html and assets folder) into the deploy area.
+          4. The compiled website already contains the Supabase project URL and
+             public publishable key. No secret/service-role key is included.
 
-          STATIC SITE PACKAGE
-          malvis-express-site.zip contains the current compiled static website.
-          It can be used for a static preview, but backend features require the
-          Supabase environment variables to be included at build time. Use the
-          source package with Netlify's build settings for the complete setup.
+          GITHUB / SOURCE DEPLOY
+          1. Import malvis01/malvis-express from GitHub in Netlify.
+          2. Build command: npm run build
+          3. Publish directory: dist
+          4. The .env.example values are the public project URL and publishable key;
+             add them as VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY
+             if you prefer setting Netlify environment variables.
 
-          Do not add a Supabase service-role or secret key to frontend variables.
-          Customer login, admin account provisioning, payment collection and
-          carrier integrations are not yet production-ready.
+          ADMIN ACCESS
+          The owner administrator account and admin role already exist in the
+          connected Supabase project. Sign in using its password-only admin page.
+
+          IMPORTANT
+          The publishable key is designed for browser use. Never expose a
+          Supabase service-role or secret key in frontend code or Netlify
+          VITE_ variables. Customer accounts, payment processing and live
+          carrier integrations remain future launch work.
           EOF
       - name: Upload ZIP packages
         uses: actions/upload-artifact@v4
