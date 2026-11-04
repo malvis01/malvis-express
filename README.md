@@ -29,9 +29,9 @@ Never place a Supabase service-role or secret key in frontend environment variab
 
 - Public website pages and responsive navigation: implemented.
 - Shipment enquiry form: configured for Netlify Forms; it receives submissions only after the site is deployed and Netlify detects the form.
-- Public shipment tracking: connected to the `public-shipment-tracking` Supabase Edge Function. It requires the tracking number and the last four digits of the recipient phone number. The response intentionally excludes contact details, addresses, payment information and free-form event descriptions.
+- Public shipment tracking: connected to the `public-shipment-tracking` Supabase Edge Function. It requires the tracking number and the last four digits of the recipient phone number. The response intentionally excludes contact details, addresses, payment information and free-form event descriptions; it exposes only shipment status, location labels and update timestamps.
 - Tracking visibility: only shipments with `tracking_code_issued = true` can be looked up. Shipment records must have a recipient phone number for verification.
-- Administrator dashboard: protected phone/password sign-in, admin-role verification, shipment creation, search, status updates and shipment timeline entries are implemented. The first administrator account still needs to be provisioned securely.
+- Administrator dashboard: password-only sign-in for the existing owner-provisioned admin account, server-verified through Supabase Auth and checked against the database admin role. Admins can create shipments, issue tracking numbers, search records, update shipment status and location, and publish timeline entries.
 - Guest shipment records are supported for admin-created bookings; a customer account can be linked later.
 - Customer registration, sign-in and personal shipment management: intentionally scheduled for a later development stage.
 - Payments and live courier integrations: not connected; no payment or shipment booking is represented as confirmed.
@@ -39,7 +39,7 @@ Never place a Supabase service-role or secret key in frontend environment variab
 ## Before launch
 
 1. Provision the first administrator account in Supabase Auth and assign its user ID the `admin` role in `public.user_roles`.
-2. Sign in at the website's Admin access page and create a real test shipment.
+2. Sign in at the website's Admin access page using the administrator account password and create a real test shipment. The sign-in screen does not ask for a phone number.
 3. Add production-grade rate limiting and abuse monitoring to the public tracking endpoint.
 4. Run `npm install` and `npm run build` (also checked by GitHub Actions on pushes to `main`).
 5. Deploy the site to Netlify and verify a test enquiry appears in the Netlify Forms dashboard.
