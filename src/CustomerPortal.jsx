@@ -36,6 +36,10 @@ function normalisePhone(value) {
   return value.trim().replace(/[\s()-]/g, '')
 }
 
+function loginEmailForPhone(value) {
+  return `${value.replace(/\D/g, '')}@phone.malvis-express.invalid`
+}
+
 function dateLabel(value) {
   return value ? new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(value)) : 'Update time unavailable'
 }
@@ -94,6 +98,7 @@ export default function CustomerPortal({ onExit }) {
       return
     }
     setUser(candidate)
+    setDisplayName(candidate.user_metadata?.display_name || '')
     setAuthState('ready')
     setAuthError('')
     await loadShipments(candidate)
@@ -150,18 +155,22 @@ export default function CustomerPortal({ onExit }) {
         setBusy(false)
         return
       }
-      const { data, error } = await supabase.auth.signUp({
-        phone: phoneNumber,
-        password,
-        options: { data: { display_name: displayName.trim(), phone_e164: phoneNumber } },
+      const { data: registration, error: registrationError } = await supabase.functions.invoke('customer-register', {
+        body: { display_name: displayName.trim(), phone_e164: phoneNumber, password },
       })
-      if (error) {
-        setAuthError(error.message)
-      } else if (data.session?.user) {
-        await acceptCustomerSession(data.session.user)
-        setNotice('Your Malvis Express customer account has been created.')
+      if (registrationError || registration?.error) {
+        setAuthError(registration?.error || registrationError?.message || 'Account creation failed. Please try again.')
       } else {
-        setNotice('Your registration was received. Phone confirmation is enabled in Supabase. To use the requested phone-and-password-only flow, the project owner must turn off Confirm phone in Authentication → Sign In / Providers → Phone.')
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email: loginEmailForPhone(phoneNumber),
+          password,
+        })
+        if (error || !data.user) {
+          setAuthError('Your account was created, but automatic sign-in failed. Please switch to Sign in and try again.')
+        } else {
+          await acceptCustomerSession(data.user)
+          setNotice('Your Malvis Express customer account has been created and you are signed in.')
+        }
       }
     } else {
       const { data, error } = await supabase.auth.signInWithPassword({ phone: phoneNumber, password })
@@ -222,7 +231,7 @@ export default function CustomerPortal({ onExit }) {
         {notice && <div className="customer-notice">{notice}</div>}
         <button className="button customer-submit" type="submit" disabled={busy}>{busy ? 'Please wait…' : mode === 'register' ? 'Create customer account' : 'Sign in to customer portal'} <ArrowRight size={16} /></button>
         <button className="customer-switch" type="button" onClick={() => { setMode(mode === 'register' ? 'login' : 'register'); setAuthError(''); setNotice('') }}>{mode === 'register' ? 'Already have an account? Sign in' : 'New to Malvis Express? Create an account'}</button>
-        <small>Phone number and password login. Use the full international phone format including country code.</small>
+        <small>Phone number and password login. Use the full international phone format including country code. Phone numbers are used as login IDs and are not SMS-verified.</small>
       </form>
     </section>
   </div>
