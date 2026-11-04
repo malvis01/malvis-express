@@ -43,6 +43,7 @@ export default function AdminDashboard({ onExit }) {
   const [user, setUser] = useState(null)
   const [shipments, setShipments] = useState([])
   const [customers, setCustomers] = useState([])
+  const [latestEvents, setLatestEvents] = useState({})
   const [loading, setLoading] = useState(false)
   const [search, setSearch] = useState('')
   const [showCreate, setShowCreate] = useState(false)
@@ -108,7 +109,24 @@ export default function AdminDashboard({ onExit }) {
       supabase.from('profiles').select('id,display_name,phone_e164').order('created_at', { ascending: false }).limit(200),
     ])
     if (shipmentResult.error) setError(shipmentResult.error.message)
-    else setShipments(shipmentResult.data || [])
+    else {
+      const rows = shipmentResult.data || []
+      setShipments(rows)
+      if (rows.length) {
+        const eventResult = await supabase.from('shipment_events')
+          .select('id,delivery_id,status,location_label,description,occurred_at')
+          .in('delivery_id', rows.map((item) => item.id))
+          .order('occurred_at', { ascending: false })
+        if (eventResult.error) setError((current) => current || eventResult.error.message)
+        else {
+          const latest = {}
+          for (const item of (eventResult.data || [])) {
+            if (!latest[item.delivery_id]) latest[item.delivery_id] = item
+          }
+          setLatestEvents(latest)
+        }
+      } else setLatestEvents({})
+    }
     if (customerResult.error) setError((current) => current || customerResult.error.message)
     else setCustomers(customerResult.data || [])
     setLoading(false)
@@ -135,7 +153,7 @@ export default function AdminDashboard({ onExit }) {
     })
     if (loginError || !data.user) {
       setAuthState('login')
-      setAuthError('Sign-in failed. Check the phone number and password.')
+      setAuthError('Sign-in failed. Check the administrator password.')
       return
     }
     const allowed = await verifyAdmin(data.user)
@@ -201,26 +219,18 @@ export default function AdminDashboard({ onExit }) {
     setSaving(true)
     setError('')
     setNotice('')
-    const update = { status: eventForm.status }
-    if (eventForm.status === 'delivered') update.delivered_at = new Date().toISOString()
-    const { error: updateError } = await supabase.from('deliveries').update(update).eq('id', editing.id)
+    const { error: updateError } = await supabase.rpc('admin_update_shipment_progress', {
+      p_delivery_id: editing.id,
+      p_status: eventForm.status,
+      p_location_label: eventForm.location_label,
+      p_description: eventForm.description,
+    })
     if (updateError) {
-      setError('Could not update shipment: ' + updateError.message)
+      setError('Could not save shipment update: ' + updateError.message)
       setSaving(false)
       return
     }
-    const { error: eventError } = await supabase.from('shipment_events').insert({
-      delivery_id: editing.id,
-      status: eventForm.status,
-      description: eventForm.description.trim() || null,
-      location_label: eventForm.location_label.trim() || null,
-      recorded_by: user.id,
-    })
-    if (eventError) {
-      setError('Shipment status changed, but the timeline update failed: ' + eventError.message)
-    } else {
-      setNotice('Shipment ' + editing.tracking_number + ' updated.')
-    }
+    setNotice('Shipment ' + editing.tracking_number + ' updated. Its status and timeline were saved together.')
     setEditing(null)
     setSaving(false)
     await loadData()
@@ -282,8 +292,8 @@ export default function AdminDashboard({ onExit }) {
           <div className="admin-shipment-list">{filtered.map((item) => <article className="admin-shipment" key={item.id}>
             <div className="shipment-row-top"><div><strong>{item.tracking_number}</strong><small>{dateLabel(item.created_at)}</small></div><span className={'status-chip status-' + item.status}>{statuses.find(([value]) => value === item.status)?.[1] || item.status}</span></div>
             <div className="shipment-route"><span>{item.pickup_location_label || 'Pickup not set'}</span><ArrowRight size={15} /><span>{item.dropoff_location_label || 'Destination not set'}</span></div>
-            <div className="shipment-meta"><span>{item.delivery_type} · {item.service_scope}</span><span>To: {item.dropoff_contact_name || 'Recipient'} · {item.dropoff_contact_phone || 'No phone'}</span><span>{item.tracking_code_issued ? 'Tracking issued' : 'Tracking not issued'}</span></div>
-            <div className="shipment-actions"><button className="admin-plain-button" onClick={() => { setEditing(item); setShowCreate(false); setEventForm({ status: item.status, location_label: '', description: '' }); setError(''); setNotice('') }}>Update status <ArrowRight size={14} /></button></div>
+            <div className="shipment-meta"><span>{item.delivery_type} · {item.service_scope}</span><span>To: {item.dropoff_contact_name || 'Recipient'} · {item.dropoff_contact_phone || 'No phone'}</span><span>Current location: {latestEvents[item.id]?.location_label || item.pickup_location_label || 'Not updated'}</span><span>{item.tracking_code_issued ? 'Tracking issued' : 'Tracking not issued'}</span></div>
+            <div className="shipment-actions"><button className="admin-plain-button" onClick={() => { setEditing(item); setShowCreate(false); setEventForm({ status: item.status, location_label: latestEvents[item.id]?.location_label || item.pickup_location_label || '', description: '' }); setError(''); setNotice('') }}>Update status <ArrowRight size={14} /></button></div>
           </article>)}</div>}
       </section>
       <p className="admin-footnote"><Clock3 size={14} /> Admin changes are recorded in the database audit log. Payment collection and carrier integrations are not enabled yet.</p>
