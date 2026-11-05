@@ -43,6 +43,7 @@ export default function AdminDashboard({ onExit }) {
   const [authError, setAuthError] = useState('')
   const [user, setUser] = useState(null)
   const [shipments, setShipments] = useState([])
+  const [latestUpdates, setLatestUpdates] = useState({})
   const [customers, setCustomers] = useState([])
   const [loading, setLoading] = useState(false)
   const [search, setSearch] = useState('')
@@ -111,7 +112,25 @@ export default function AdminDashboard({ onExit }) {
       supabase.from('profiles').select('id,display_name,phone_e164').order('created_at', { ascending: false }).limit(200),
     ])
     if (shipmentResult.error) setError(shipmentResult.error.message)
-    else setShipments(shipmentResult.data || [])
+    else {
+      const loadedShipments = shipmentResult.data || []
+      setShipments(loadedShipments)
+      if (loadedShipments.length) {
+        const { data: eventRows, error: eventsError } = await supabase
+          .from('shipment_events')
+          .select('delivery_id,status,location_label,description,occurred_at')
+          .in('delivery_id', loadedShipments.map((item) => item.id))
+          .order('occurred_at', { ascending: false })
+        if (eventsError) setError(eventsError.message)
+        else {
+          const newestByDelivery = {}
+          for (const row of eventRows || []) {
+            if (!newestByDelivery[row.delivery_id]) newestByDelivery[row.delivery_id] = row
+          }
+          setLatestUpdates(newestByDelivery)
+        }
+      } else setLatestUpdates({})
+    }
     if (customerResult.error) setError((current) => current || customerResult.error.message)
     else setCustomers(customerResult.data || [])
     setLoading(false)
@@ -242,10 +261,10 @@ export default function AdminDashboard({ onExit }) {
 
   if (authState !== 'ready') {
     return <div className="admin-shell">
-      <header className="admin-top"><a className="brand" href="#home" onClick={onExit} aria-label="FedEx home"><span className="fedex-text-logo">FedEx <small>Express</small></span></a><a className="admin-back" href="#home" onClick={onExit}><ArrowLeft size={16} /> Back to website</a></header>
+      <header className="admin-top"><a className="brand" href="#home" onClick={onExit} aria-label="Flash Express home"><span className="fedex-text-logo">Flash <small>Express</small></span></a><a className="admin-back" href="#home" onClick={onExit}><ArrowLeft size={16} /> Back to website</a></header>
       <section className="admin-login-wrap"><form className="admin-login-card" onSubmit={signIn}>
         <span className="admin-lock"><Package size={25} /></span><div className="eyebrow dark-eyebrow">SECURE OPERATIONS</div>
-        <h1>Administrator<br /><em>sign in.</em></h1><p>Enter your administrator password to access FedEx operations.</p>
+        <h1>Administrator<br /><em>sign in.</em></h1><p>Enter your administrator password to access Flash Express operations.</p>
         <label>Password<input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Your password" autoComplete="current-password" required /></label>
         {authError && <div className="admin-error"><AlertCircle size={16} /> {authError}</div>}
         <button className="button admin-submit" type="submit">Sign in to dashboard <ArrowRight size={16} /></button>
@@ -279,19 +298,19 @@ export default function AdminDashboard({ onExit }) {
           <button className="button" type="submit" disabled={saving}>{saving ? 'Creating shipment…' : 'Create shipment & issue tracking code'} <ArrowRight size={16} /></button>
         </form>
       </section>}
-      {editing && <section className="admin-form-card"><div className="admin-form-title"><div><h2>Update {editing.tracking_number}</h2><p>Each update is saved to the shipment timeline.</p></div><button className="admin-plain-button" onClick={() => setEditing(null)}>Close</button></div>
+      {editing && <section className="admin-form-card"><div className="admin-form-title"><div><h2>Update {editing.tracking_number}</h2><p>Record the latest shipment location and status. Save a new update whenever the package moves to another facility or area.</p></div><button className="admin-plain-button" onClick={() => setEditing(null)}>Close</button></div>
         <form onSubmit={updateShipment}><div className="admin-form-grid">
           <label>New status<select value={eventForm.status} onChange={(e) => setEventForm({ ...eventForm, status: e.target.value })}>{statuses.map(([value,label]) => <option key={value} value={value}>{label}</option>)}</select></label>
-          <label>Current location<input value={eventForm.location_label} onChange={(e) => setEventForm({ ...eventForm, location_label: e.target.value })} placeholder="e.g. Lagos sorting centre" /></label>
+          <label>Latest shipment location<input value={eventForm.location_label} onChange={(e) => setEventForm({ ...eventForm, location_label: e.target.value })} placeholder="e.g. Lagos sorting centre" /><small>Enter the current city, area, warehouse or delivery station.</small></label>
           <label className="admin-full">Update note<textarea rows="2" value={eventForm.description} onChange={(e) => setEventForm({ ...eventForm, description: e.target.value })} placeholder="Optional progress note" /></label>
-        </div><button className="button" type="submit" disabled={saving}>{saving ? 'Saving update…' : 'Save shipment update'} <CheckCircle2 size={16} /></button></form>
+        </div><button className="button" type="submit" disabled={saving}>{saving ? 'Saving update…' : 'Save tracking update'} <CheckCircle2 size={16} /></button></form>
       </section>}
       <section className="admin-list-card"><div className="admin-list-head"><div><h2>Shipments</h2><p>Latest 100 shipment records</p></div><button className="admin-plain-button" onClick={loadData} disabled={loading}><RefreshCw size={15} /> Refresh</button></div>
         <div className="admin-search"><Search size={17} /><input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search tracking number, recipient or route" /></div>
         {loading ? <div className="admin-empty">Loading shipments…</div> : filtered.length === 0 ? <div className="admin-empty"><Package size={25} /><strong>No shipments found</strong><span>Create your first shipment to get started.</span></div> :
           <div className="admin-shipment-list">{filtered.map((item) => <article className="admin-shipment" key={item.id}>
             <div className="shipment-row-top"><div><strong>{item.tracking_number}</strong><small>{dateLabel(item.created_at)}</small></div><span className={'status-chip status-' + item.status}>{statuses.find(([value]) => value === item.status)?.[1] || item.status}</span></div>
-            <div className="shipment-route"><span>{item.pickup_location_label || 'Pickup not set'}</span><ArrowRight size={15} /><span>{item.dropoff_location_label || 'Destination not set'}</span></div>
+            <div className="shipment-route"><span>{item.pickup_location_label || 'Pickup not set'}</span><ArrowRight size={15} /><span>{item.dropoff_location_label || 'Destination not set'}</span></div>\n            <div className="shipment-meta"><span>Latest location: {latestUpdates[item.id]?.location_label || 'Not updated yet'}</span><span>{latestUpdates[item.id] ? dateLabel(latestUpdates[item.id].occurred_at) : 'No location update'}</span></div>
             <div className="shipment-meta"><span>From: {item.pickup_contact_name || 'Sender'} · {item.pickup_contact_phone || 'No phone'}</span><span>To: {item.dropoff_contact_name || 'Recipient'} · {item.dropoff_contact_phone || 'No phone'}</span></div>
             {item.package_image_url && <img src={item.package_image_url} alt="Shipment package" style={{ width: '112px', height: '84px', objectFit: 'cover', borderRadius: '6px', marginTop: '12px' }} />}
             <div className="shipment-meta"><span>{item.delivery_type} · {item.service_scope}</span><span>{item.tracking_code_issued ? 'Tracking issued' : 'Tracking not issued'}</span></div>
