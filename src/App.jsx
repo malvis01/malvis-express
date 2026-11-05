@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react'
 import {
   ArrowRight, ArrowUpRight, Globe2, Package, MapPin, ShieldCheck,
-  Clock3, Menu, X, Truck, Plane, Ship, CheckCircle2, Mail, Phone,
+  Clock3, Menu, X, Truck, Plane, Ship, CheckCircle2, Mail,
   Send, Compass, Boxes, FileText
 } from 'lucide-react'
 import { isSupabaseConfigured, supabase } from './lib/supabase'
 import AdminDashboard from './AdminDashboard.jsx'
-import CustomerPortal from './CustomerPortal.jsx'
 
 const services = [
   { icon: Package, title: 'Parcels & documents', text: 'For personal packages, important documents and everyday deliveries.' },
@@ -26,7 +25,6 @@ function App() {
   }, [])
   const [menuOpen, setMenuOpen] = useState(false)
   const [trackingCode, setTrackingCode] = useState('')
-  const [trackingPhone, setTrackingPhone] = useState('')
   const [trackingState, setTrackingState] = useState('idle')
   const [trackingResult, setTrackingResult] = useState(null)
   const [trackingError, setTrackingError] = useState('')
@@ -65,7 +63,7 @@ function App() {
       return
     }
     const { data, error } = await supabase.functions.invoke('public-shipment-tracking', {
-      body: { tracking_number: trackingCode, phone_last4: trackingPhone },
+      body: { tracking_number: trackingCode }, 
     })
     if (error || data?.error) {
       setTrackingState('error')
@@ -112,11 +110,9 @@ function App() {
           <a href="#services" onClick={closeMenu}>Services</a>
           <a href="#about" onClick={closeMenu}>About</a>
           <a href="#contact" onClick={closeMenu}>Contact</a>
+          <a href="#admin" onClick={closeMenu}>Admin login</a>
         </nav>
-        <div className="nav-actions">
-          <a className="login-link" href="#account" onClick={(event) => { event.preventDefault(); window.location.hash = '#account'; document.getElementById('account')?.scrollIntoView({ behavior: 'smooth' }) }}>Login</a>
-          <a className="button button-small" href="#signup" onClick={(event) => { event.preventDefault(); window.location.hash = '#signup'; document.getElementById('account')?.scrollIntoView({ behavior: 'smooth' }) }}>Sign up <ArrowUpRight size={16} /></a>
-        </div>
+        <div className="nav-actions"><a className="button button-small" href="#admin">Admin portal <ArrowUpRight size={16} /></a></div>
       </header>
 
       <div className="prototype-notice" role="note">Shipment operations are managed on this platform · Carrier API access requires authorization.</div>
@@ -158,13 +154,11 @@ function App() {
       </section>
 
       <section className="tracking-section" id="tracking">
-        <div><div className="eyebrow dark-eyebrow">SHIPMENT TRACKING</div><h2>Every delivery has a story.<br /><em>Follow yours.</em></h2><p className="tracking-intro">Enter your tracking number and the last four digits of the recipient's phone number to view shipment progress.</p></div>
+        <div><div className="eyebrow dark-eyebrow">SHIPMENT TRACKING</div><h2>Every delivery has a story.<br /><em>Follow yours.</em></h2><p className="tracking-intro">Enter the tracking code provided by the shipment administrator to view shipment progress.</p></div>
         <div className="tracking-panel">
           <form className="tracking-form" onSubmit={trackShipment}>
             <label htmlFor="tracking-code">Shipment tracking number</label>
             <div className="tracking-input"><Package size={19} /><input id="tracking-code" value={trackingCode} onChange={(e) => setTrackingCode(e.target.value.toUpperCase())} placeholder="Enter your shipment reference" autoComplete="off" required /><button type="submit" aria-label="Track shipment" disabled={trackingState === 'loading'}><ArrowRight /></button></div>
-            <label className="phone-last4-label" htmlFor="tracking-phone">Recipient phone — last four digits</label>
-            <div className="tracking-input"><Phone size={18} /><input id="tracking-phone" inputMode="numeric" maxLength="4" value={trackingPhone} onChange={(e) => setTrackingPhone(e.target.value.replace(/\D/g, '').slice(0, 4))} placeholder="e.g. 4821" required /></div>
             <button className="button track-submit" type="submit" disabled={trackingState === 'loading'}>{trackingState === 'loading' ? 'Checking shipment…' : 'Track shipment'} <ArrowRight size={16} /></button>
             {trackingState === 'error' && <p className="tracking-feedback error">{trackingError}</p>}
           </form>
@@ -218,7 +212,6 @@ function App() {
 
       <section className="about-section" id="about"><div className="about-icon"><Globe2 size={28} /></div><div><div className="eyebrow dark-eyebrow">BUILT TO CONNECT DISTANCES</div><h2>Moving goods.<br /><em>Bringing people closer.</em></h2></div><p>This independent platform is being developed for delivery and shipment management, bringing shipment enquiries, logistics coordination and tracking into one place.</p></section>
 
-      <div id="account"><CustomerPortal /></div>
 
       <footer><a className="brand footer-brand" href="#home" aria-label="FedEx home"><img className="fedex-logo-img footer-logo-img" src="/fedex-express-logo.jpg" alt="FedEx Express" /></a><span>Independent platform preview · Not operated by FedEx.</span><span className="footer-status"><i /> {isSupabaseConfigured ? 'Backend project connected' : 'Backend setup pending'}</span><a className="admin-footer-link" href="#admin">Admin access</a></footer>
     </main>
