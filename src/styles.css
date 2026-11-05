@@ -341,3 +341,26 @@ body{background:#f7faff;color:var(--mx-ink)}
  .hero-redesign .hero-actions{flex-wrap:wrap}
  .hero-track-card{width:72%}
 }
+
+
+/* FedEx-inspired concept branding. This is an independent, unofficial prototype. */
+:root{--mx-blue:#4d148c;--mx-blue-dark:#2b0a50;--mx-ink:#24103f;--mx-muted:#655477}
+.fedex-orange{color:#ff6600!important}
+.brand-logo .brand-mark,.footer-brand .brand-mark,.admin-top .brand-mark,.customer-top .brand-mark{background:linear-gradient(135deg,#4d148c 0 58%,#ff6600 58% 100%);color:#fff}
+.brand-wordmark strong{color:#4d148c!important;font-weight:900;letter-spacing:-1.5px}
+.brand-wordmark small{color:#655477}
+.nav .nav-home,.button-signup,.hero-redesign .hero-primary,.hero-track-button,.tracking-input button,.tracking-form .track-submit,.reference-services .service-arrow{background:#4d148c}
+.nav .nav-home:hover,.button-signup:hover,.hero-redesign .hero-primary:hover,.hero-track-button:hover{background:#351064}
+.nav a:hover,.button-login,.play-mark,.hero-track-verify,.hero-track-card h3 svg,.reference-services .service-icon{color:#4d148c}
+.hero-redesign h1 em,.reference-services .section-heading h2 em{color:#ff6600}
+.hero-redesign{background:linear-gradient(105deg,#fff9f4 0%,#f8f2fc 48%,#f0e8f8 100%)}
+.hero-redesign:before{background:linear-gradient(90deg,#fffaf6 0%,#fffaf6ed 73%,#fffaf600 100%)}
+.hero-image-placeholder{background:radial-gradient(ellipse at 48% 42%,#9a59c6 0%,#64239a 35%,#351064 76%,#21083f 100%)}
+.benefits-strip .strip-icon,.stats-strip>div>span{color:#4d148c}
+.reference-services .eyebrow:before{background:#ff6600}
+.global-promo{background:linear-gradient(120deg,#4d148c 0%,#64239a 48%,#2b0a50 100%)}
+.promo-button{color:#4d148c}
+.how-section{background:#2b0a50}
+.how-section h2 em{color:#ff9b55}
+.fedex-concept-banner{padding:10px 18px;text-align:center;background:#fff4e9;border-top:1px solid #ffe0c2;border-bottom:1px solid #ffe0c2;color:#5a3476;font-size:11px;font-weight:700;letter-spacing:.1px}
+@media(max-width:760px){.fedex-concept-banner{font-size:10px;padding:9px 12px}}
