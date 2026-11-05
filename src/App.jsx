@@ -15,8 +15,6 @@ const services = [
   { icon: Ship, title: 'Sea freight', text: 'Sea-freight enquiries for bulk cargo and larger international movements.' },
 ]
 
-const initialForm = { name: '', email: '', phone: '', origin: '', destination: '', deliveryType: 'Parcel', message: '' }
-
 function App() {
   const [adminMode, setAdminMode] = useState(window.location.hash === '#admin')
   const [customerMode, setCustomerMode] = useState(window.location.hash.startsWith('#account'))
@@ -34,8 +32,6 @@ function App() {
   const [trackingState, setTrackingState] = useState('idle')
   const [trackingResult, setTrackingResult] = useState(null)
   const [trackingError, setTrackingError] = useState('')
-  const [form, setForm] = useState(initialForm)
-  const [formState, setFormState] = useState('idle')
 
   const closeMenu = () => setMenuOpen(false)
   const statusLabels = {
@@ -84,25 +80,6 @@ function App() {
       setTrackingError('The tracking service could not be reached. Please try again in a moment.')
     }
   }
-  const updateForm = (event) => setForm({ ...form, [event.target.name]: event.target.value })
-
-  async function submitEnquiry(event) {
-    event.preventDefault()
-    setFormState('sending')
-    const payload = new URLSearchParams({ 'form-name': 'shipment-enquiry', 'bot-field': '', ...form })
-    try {
-      const response = await fetch('/', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: payload.toString(),
-      })
-      if (!response.ok) throw new Error('Enquiry could not be sent')
-      setFormState('sent')
-      setForm(initialForm)
-    } catch {
-      setFormState('error')
-    }
-  }
 
   if (adminMode) return <AdminDashboard onExit={() => { window.location.hash = '#home'; setAdminMode(false); setCustomerMode(false) }} />
   if (customerMode) return <CustomerPortal initialMode={window.location.hash.includes('signup') ? 'register' : 'login'} onExit={() => { window.location.hash = '#home'; setCustomerMode(false); setAdminMode(false) }} />
@@ -122,7 +99,6 @@ function App() {
           <a href="#tracking" onClick={closeMenu}>Track Package</a>
           <a className="nav-services" href="#services" onClick={closeMenu}>Services <ChevronDown size={15} /></a>
           <a href="#about" onClick={closeMenu}>About</a>
-          <a href="#contact" onClick={closeMenu}>Contact</a>
         </nav>
         <div className="nav-actions">
           <a className="button button-login" href="#account" onClick={closeMenu}><UserRound size={16} /> Login</a>
@@ -198,14 +174,14 @@ function App() {
           <div className="service-grid">
             {services.map(({ icon: Icon, title, text }, index) => <article className={'service-card service-card-' + index} key={title}>
               <div className="service-art"><span className="service-art-icon"><Icon size={46} /></span><span className="service-art-orbit" /></div>
-              <div className="service-card-content"><span className="service-icon"><Icon size={25} /></span><div><h3>{title === 'Parcels & documents' ? 'Parcel Delivery' : title === 'Road freight' ? 'Road Delivery' : title === 'Air cargo' ? 'Air Freight' : 'Sea Freight'}</h3><p>{index === 0 ? 'Small Packages, Big Care' : index === 1 ? 'Fast & Reliable' : index === 2 ? 'Global Reach' : 'Cost Effective'}</p></div><a className="service-arrow" href="#contact" aria-label={'Enquire about ' + title}><ArrowRight size={16} /></a></div>
+              <div className="service-card-content"><span className="service-icon"><Icon size={25} /></span><div><h3>{title === 'Parcels & documents' ? 'Parcel Delivery' : title === 'Road freight' ? 'Road Delivery' : title === 'Air cargo' ? 'Air Freight' : 'Sea Freight'}</h3><p>{index === 0 ? 'Small Packages, Big Care' : index === 1 ? 'Fast & Reliable' : index === 2 ? 'Global Reach' : 'Cost Effective'}</p></div><a className="service-arrow" href="#tracking" aria-label={'Track shipment information for ' + title}><ArrowRight size={16} /></a></div>
             </article>)}
           </div>
         </div>
         <aside className="global-promo">
           <div className="promo-map"><Globe2 size={190} strokeWidth={0.7} /></div>
           <div className="promo-plane"><Plane size={64} /></div>
-          <div className="promo-copy"><h3>We connect<br />you to the world</h3><p>Your logistics partner<br />for a bigger tomorrow.</p><a href="#contact" className="promo-button">Get Started <ArrowRight size={16} /></a></div>
+          <div className="promo-copy"><h3>We connect<br />you to the world</h3><p>Your logistics partner<br />for a bigger tomorrow.</p><a href="#tracking" className="promo-button">Get Started <ArrowRight size={16} /></a></div>
           <div className="promo-ship"><Ship size={58} /><Truck size={54} /></div>
         </aside>
       </section>
@@ -220,32 +196,6 @@ function App() {
       <section className="how-section" id="how-it-works">
         <div className="eyebrow">A CLEARER WAY TO SHIP</div><h2>From enquiry to <em>arrival.</em></h2>
         <div className="steps"><div><b>01</b><strong>Tell us what you need to send</strong><p>Share the shipment type, pickup location, destination and contact details.</p></div><div><b>02</b><strong>Discuss your delivery option</strong><p>Our team can review the route and follow up about available service and pricing.</p></div><div><b>03</b><strong>Prepare for shipment</strong><p>Once operations are active, shipment confirmation and tracking updates will be provided.</p></div></div>
-      </section>
-
-      <section className="quote-section" id="contact">
-        <div className="quote-copy">
-          <div className="eyebrow dark-eyebrow">CONTACT OUR TEAM</div>
-          <h2>How can we<br /><em>help you?</em></h2>
-          <p>Reach out to our team for assistance with delivery options, shipment information and customer support.</p>
-          <div className="contact-points"><span><Mail size={17} /> Send a shipment enquiry</span><span><Compass size={17} /> Local and international routes</span><span><Boxes size={17} /> Parcels and cargo enquiries</span></div>
-        </div>
-        <form className="quote-form" name="shipment-enquiry" method="POST" data-netlify="true" netlify-honeypot="bot-field" onSubmit={submitEnquiry}>
-          <input type="hidden" name="form-name" value="shipment-enquiry" />
-          <p className="hidden-field"><label>Do not fill this in: <input name="bot-field" onChange={updateForm} /></label></p>
-          <div className="form-grid">
-            <label>Your name<input name="name" value={form.name} onChange={updateForm} placeholder="Full name" required /></label>
-            <label>Email address<input name="email" type="email" value={form.email} onChange={updateForm} placeholder="you@example.com" required /></label>
-            <label>Phone number<input name="phone" type="tel" value={form.phone} onChange={updateForm} placeholder="Phone / WhatsApp" required /></label>
-            <label>Shipment type<select name="deliveryType" value={form.deliveryType} onChange={updateForm}><option>Parcel</option><option>Documents</option><option>Road freight</option><option>Air cargo</option><option>Sea freight</option><option>Other</option></select></label>
-            <label>Pickup / origin<input name="origin" value={form.origin} onChange={updateForm} placeholder="City, country" required /></label>
-            <label>Destination<input name="destination" value={form.destination} onChange={updateForm} placeholder="City, country" required /></label>
-            <label className="full-field">Shipment details<textarea name="message" value={form.message} onChange={updateForm} placeholder="Describe your shipment, approximate size or weight, and preferred date." rows="4" /></label>
-          </div>
-          <button className="button submit-button" type="submit" disabled={formState === 'sending'}>{formState === 'sending' ? 'Sending enquiry…' : 'Send enquiry'} <Send size={16} /></button>
-          {formState === 'sent' && <p className="form-feedback success"><CheckCircle2 size={16} /> Your enquiry has been submitted. Thank you.</p>}
-          {formState === 'error' && <p className="form-feedback error">We couldn't send your enquiry. Please try again later.</p>}
-          <small className="form-disclaimer">This is a shipping enquiry, not a confirmed booking or payment request.</small>
-        </form>
       </section>
 
       <section className="about-section" id="about"><div className="about-icon"><Globe2 size={28} /></div><div><div className="eyebrow dark-eyebrow">BUILT TO CONNECT DISTANCES</div><h2>Moving goods.<br /><em>Bringing people closer.</em></h2></div><p>This independent FedEx concept is being developed as a worldwide delivery and shipment management platform, bringing shipment enquiries, logistics coordination and tracking into one place.</p></section>
