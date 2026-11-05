@@ -2,7 +2,7 @@ name: Build verification
 
 on:
   push:
-    branches: [main, feature/fresh-supabase-foundation, feature/fedex-brand-refresh]
+    branches: [main, feature/fresh-supabase-foundation, feature/fedex-brand-refresh, admin-shipment-mainline]
   pull_request:
     branches: [main, feature/fresh-supabase-foundation]
 
