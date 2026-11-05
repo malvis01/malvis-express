@@ -23,7 +23,19 @@ body { color: #281344; background: #fff; }
 }
 .fedex-wordmark span { color: var(--fedex-purple); }
 .fedex-wordmark b { color: var(--fedex-orange); font-weight: 800; }
+.fedex-brand-lockup { display: inline-flex; flex-direction: column; align-items: flex-end; gap: 0; }
+.fedex-express {
+  color: #24118f;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 13px;
+  line-height: 1;
+  font-weight: 400;
+  letter-spacing: 2.8px;
+  margin-top: 2px;
+  padding-right: 2px;
+}
 .footer-brand .fedex-wordmark { font-size: 25px; }
+.footer-brand .fedex-express { font-size: 10px; letter-spacing: 2px; }
 .button, .tracking-panel .tracking-input button, .tracking-panel .track-submit {
   background: linear-gradient(115deg, var(--fedex-purple), #351064);
   box-shadow: 0 8px 18px rgba(77,20,140,.18);
@@ -67,5 +79,6 @@ body { color: #281344; background: #fff; }
 }
 @media (max-width: 650px) {
   .fedex-wordmark { font-size: 27px; }
+  .fedex-express { font-size: 11px; }
   .footer-brand .fedex-wordmark { font-size: 23px; }
 }
