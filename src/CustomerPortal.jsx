@@ -108,7 +108,7 @@ export default function CustomerPortal({ onExit }) {
     let active = true
     if (!supabase) {
       setAuthState('error')
-      setAuthError('The customer service is not configured. Please contact Malvis Express.')
+      setAuthError('The customer service is not configured. Please contact FedEx concept.')
       return () => { active = false }
     }
     supabase.auth.getSession().then(({ data }) => {
@@ -170,7 +170,7 @@ export default function CustomerPortal({ onExit }) {
           setAuthError('Your account was created, but automatic sign-in failed. Please switch to Sign in and try again.')
         } else {
           await acceptCustomerSession(data.user)
-          setNotice('Your Malvis Express customer account has been created and you are signed in.')
+          setNotice('Your FedEx concept customer account has been created and you are signed in.')
         }
       }
     } else {
@@ -198,7 +198,7 @@ export default function CustomerPortal({ onExit }) {
     const { error } = await supabase.from('deliveries').insert(insert)
     if (error) setAuthError('Could not submit shipment request: ' + error.message)
     else {
-      setNotice('Your shipment request has been sent. The Malvis Express team will review it and issue a tracking number when it is accepted.')
+      setNotice('Your shipment request has been sent. The FedEx concept team will review it and issue a tracking number when it is accepted.')
       setBooking(emptyBooking)
       setShowBooking(false)
       await loadShipments(user)
@@ -218,7 +218,7 @@ export default function CustomerPortal({ onExit }) {
   if (authState === 'checking') return <div className="customer-shell"><div className="customer-loading">Checking your customer session…</div></div>
 
   if (authState !== 'ready') return <div className="customer-shell">
-    <header className="customer-top"><a className="brand" href="#home" onClick={onExit}><span className="brand-mark"><Package size={22} /></span><span>MALVIS<span className="brand-light"> EXPRESS</span></span></a><a className="customer-back" href="#home" onClick={onExit}><ArrowLeft size={16} /> Back to website</a></header>
+    <header className="customer-top"><a className="brand" href="#home" onClick={onExit}><span className="brand-mark"><Package size={22} /></span><span>Fed<span className="fedex-orange">Ex</span></span></a><a className="customer-back" href="#home" onClick={onExit}><ArrowLeft size={16} /> Back to website</a></header>
     <section className="customer-login-wrap">
       <form className="customer-login-card" onSubmit={submitAuth}>
         <span className="customer-lock"><UserRound size={25} /></span>
@@ -231,14 +231,14 @@ export default function CustomerPortal({ onExit }) {
         {authError && <div className="customer-error">{authError}</div>}
         {notice && <div className="customer-notice">{notice}</div>}
         <button className="button customer-submit" type="submit" disabled={busy}>{busy ? 'Please wait…' : mode === 'register' ? 'Create customer account' : 'Sign in to customer portal'} <ArrowRight size={16} /></button>
-        <button className="customer-switch" type="button" onClick={() => { setMode(mode === 'register' ? 'login' : 'register'); setAuthError(''); setNotice('') }}>{mode === 'register' ? 'Already have an account? Sign in' : 'New to Malvis Express? Create an account'}</button>
+        <button className="customer-switch" type="button" onClick={() => { setMode(mode === 'register' ? 'login' : 'register'); setAuthError(''); setNotice('') }}>{mode === 'register' ? 'Already have an account? Sign in' : 'New to FedEx concept? Create an account'}</button>
         <small>Phone number and password login. Use the full international phone format including country code. Phone numbers are used as login IDs and are not SMS-verified.</small>
       </form>
     </section>
   </div>
 
   return <div className="customer-shell">
-    <header className="customer-top"><a className="brand" href="#home" onClick={onExit}><span className="brand-mark"><Package size={22} /></span><span>MALVIS<span className="brand-light"> EXPRESS</span></span></a><div className="customer-top-actions"><span>Customer account</span><button className="admin-plain-button" onClick={signOut}><LogOut size={16} /> Sign out</button></div></header>
+    <header className="customer-top"><a className="brand" href="#home" onClick={onExit}><span className="brand-mark"><Package size={22} /></span><span>Fed<span className="fedex-orange">Ex</span></span></a><div className="customer-top-actions"><span>Customer account</span><button className="admin-plain-button" onClick={signOut}><LogOut size={16} /> Sign out</button></div></header>
     <main className="customer-main">
       <div className="customer-heading"><div><div className="eyebrow dark-eyebrow">YOUR DELIVERY SPACE</div><h1>Hello, <em>{displayName || user?.user_metadata?.display_name || 'customer'}.</em></h1><p>Manage your shipment requests and follow package progress.</p></div><button className="button" onClick={() => setShowBooking(!showBooking)}><Package size={17} /> New shipment request</button></div>
       {notice && <div className="customer-notice customer-wide-notice"><CheckCircle2 size={17} /> {notice}</div>}
