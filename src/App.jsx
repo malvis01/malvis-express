@@ -100,9 +100,8 @@ function App() {
   return (
     <main>
       <header className="topbar">
-        <a className="brand" href="#home" aria-label="Malvis Express home">
-          <span className="brand-mark"><Package size={22} /></span>
-          <span>MALVIS<span className="brand-light"> EXPRESS</span></span>
+        <a className="brand" href="#home" aria-label="FedEx home">
+          <span className="fedex-wordmark"><span>Fed</span><b>Ex</b></span>
         </a>
         <button className="menu-toggle" onClick={() => setMenuOpen(!menuOpen)} aria-label="Toggle navigation">
           {menuOpen ? <X /> : <Menu />}
@@ -123,7 +122,7 @@ function App() {
       <section className="hero" id="home">
         <div className="hero-copy">
           <div className="eyebrow"><span className="pulse" /> WORLDWIDE DELIVERY SERVICE</div>
-          <h1>Malvis Express<br />Your <em>Global Delivery</em><br />Partner</h1>
+          <h1>FedEx<br />Your <em>Global Delivery</em><br />Partner</h1>
           <p className="hero-text">Send and receive packages across the world with a simpler shipment experience — from your first enquiry to tracking updates.</p>
           <div className="hero-actions">
             <a className="button" href="#tracking"><Package size={17} /> Track your package <ArrowRight size={17} /></a>
@@ -142,7 +141,7 @@ function App() {
           <div className="map-dot dot-three"><MapPin size={18} /></div>
           <div className="parcel-card">
             <div className="parcel-icon"><Package size={30} /></div>
-            <div><small>MALVIS EXPRESS</small><strong>Global logistics</strong><span><i /> Your delivery, in view</span></div>
+            <div><small>FedEx</small><strong>Global logistics</strong><span><i /> Your delivery, in view</span></div>
             <ArrowUpRight className="parcel-arrow" size={19} />
           </div>
           <div className="floating-tag"><Globe2 size={16} /> Worldwide delivery</div>
@@ -160,7 +159,7 @@ function App() {
         <div><div className="eyebrow dark-eyebrow">SHIPMENT TRACKING</div><h2>Every delivery has a story.<br /><em>Follow yours.</em></h2><p className="tracking-intro">Enter your tracking number and the last four digits of the recipient's phone number to view shipment progress.</p></div>
         <div className="tracking-panel">
           <form className="tracking-form" onSubmit={trackShipment}>
-            <label htmlFor="tracking-code">Malvis Express tracking number</label>
+            <label htmlFor="tracking-code">FedEx tracking number</label>
             <div className="tracking-input"><Package size={19} /><input id="tracking-code" value={trackingCode} onChange={(e) => setTrackingCode(e.target.value.toUpperCase())} placeholder="MX-REQ-XXXXXXXXXX" autoComplete="off" required /><button type="submit" aria-label="Track shipment" disabled={trackingState === 'loading'}><ArrowRight /></button></div>
             <label className="phone-last4-label" htmlFor="tracking-phone">Recipient phone — last four digits</label>
             <div className="tracking-input"><Phone size={18} /><input id="tracking-phone" inputMode="numeric" maxLength="4" value={trackingPhone} onChange={(e) => setTrackingPhone(e.target.value.replace(/\D/g, '').slice(0, 4))} placeholder="e.g. 4821" required /></div>
@@ -193,7 +192,7 @@ function App() {
         <div className="quote-copy">
           <div className="eyebrow dark-eyebrow">START A SHIPPING ENQUIRY</div>
           <h2>Where does it<br /><em>need to go?</em></h2>
-          <p>Tell us a little about your shipment. Send an enquiry and the Malvis Express team can follow up with you.</p>
+          <p>Tell us a little about your shipment. Send an enquiry and the FedEx team can follow up with you.</p>
           <div className="contact-points"><span><Mail size={17} /> Send a shipment enquiry</span><span><Compass size={17} /> Local and international routes</span><span><Boxes size={17} /> Parcels and cargo enquiries</span></div>
         </div>
         <form className="quote-form" name="shipment-enquiry" method="POST" data-netlify="true" netlify-honeypot="bot-field" onSubmit={submitEnquiry}>
@@ -215,11 +214,11 @@ function App() {
         </form>
       </section>
 
-      <section className="about-section" id="about"><div className="about-icon"><Globe2 size={28} /></div><div><div className="eyebrow dark-eyebrow">BUILT TO CONNECT DISTANCES</div><h2>Moving goods.<br /><em>Bringing people closer.</em></h2></div><p>Malvis Express is being developed as a worldwide delivery and shipment management platform, bringing shipment enquiries, logistics coordination and tracking into one place.</p></section>
+      <section className="about-section" id="about"><div className="about-icon"><Globe2 size={28} /></div><div><div className="eyebrow dark-eyebrow">BUILT TO CONNECT DISTANCES</div><h2>Moving goods.<br /><em>Bringing people closer.</em></h2></div><p>FedEx is being developed as a worldwide delivery and shipment management platform, bringing shipment enquiries, logistics coordination and tracking into one place.</p></section>
 
       <div id="account"><CustomerPortal /></div>
 
-      <footer><a className="brand footer-brand" href="#home"><span className="brand-mark"><Package size={20} /></span><span>MALVIS<span className="brand-light"> EXPRESS</span></span></a><span>© {new Date().getFullYear()} Malvis Express. Built to move what matters.</span><span className="footer-status"><i /> {isSupabaseConfigured ? 'Backend project connected' : 'Backend setup pending'}</span><a className="admin-footer-link" href="#admin">Admin access</a></footer>
+      <footer><a className="brand footer-brand" href="#home" aria-label="FedEx home"><span className="fedex-wordmark"><span>Fed</span><b>Ex</b></span></a><span>© {new Date().getFullYear()} FedEx. Built to move what matters.</span><span className="footer-status"><i /> {isSupabaseConfigured ? 'Backend project connected' : 'Backend setup pending'}</span><a className="admin-footer-link" href="#admin">Admin access</a></footer>
     </main>
   )
 }
