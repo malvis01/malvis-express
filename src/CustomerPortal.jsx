@@ -44,8 +44,8 @@ function dateLabel(value) {
   return value ? new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(value)) : 'Update time unavailable'
 }
 
-export default function CustomerPortal({ onExit }) {
-  const [mode, setMode] = useState('login')
+export default function CustomerPortal({ onExit, initialMode = 'login' }) {
+  const [mode, setMode] = useState(initialMode)
   const [authState, setAuthState] = useState('checking')
   const [user, setUser] = useState(null)
   const [displayName, setDisplayName] = useState('')
