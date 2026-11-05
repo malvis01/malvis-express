@@ -101,7 +101,7 @@ function App() {
     <main>
       <header className="topbar">
         <a className="brand" href="#home" aria-label="FedEx home">
-          <span className="fedex-wordmark"><span>Fed</span><b>Ex</b></span>
+          <span className="fedex-brand-lockup"><span className="fedex-wordmark"><span>Fed</span><b>Ex</b></span><span className="fedex-express">Express</span></span>
         </a>
         <button className="menu-toggle" onClick={() => setMenuOpen(!menuOpen)} aria-label="Toggle navigation">
           {menuOpen ? <X /> : <Menu />}
