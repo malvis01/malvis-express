@@ -82,3 +82,8 @@ body { color: #281344; background: #fff; }
   .fedex-express { font-size: 11px; }
   .footer-brand .fedex-wordmark { font-size: 23px; }
 }
+
+.fedex-logo-img { display:block; width: 164px; height:auto; max-height:72px; object-fit:contain; }
+.footer-logo-img { width:132px; max-height:58px; }
+.admin-top .fedex-logo-img { width:156px; }
+@media(max-width:650px){.fedex-logo-img{width:138px}.footer-logo-img{width:118px}}
