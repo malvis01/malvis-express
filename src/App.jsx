@@ -68,16 +68,21 @@ function App() {
       setTrackingError('Tracking service is not configured yet. Please try again later.')
       return
     }
-    const { data, error } = await supabase.functions.invoke('public-shipment-tracking', {
-      body: { tracking_number: trackingCode, phone_last4: trackingPhone },
-    })
-    if (error || data?.error) {
+    try {
+      const { data, error } = await supabase.functions.invoke('public-shipment-tracking', {
+        body: { tracking_number: trackingCode.trim(), phone_last4: trackingPhone.trim() },
+      })
+      if (error || data?.error || !data?.shipment) {
+        setTrackingState('error')
+        setTrackingError(data?.error || 'We could not find that shipment. Check the tracking number and recipient phone digits, then try again.')
+        return
+      }
+      setTrackingResult(data)
+      setTrackingState('success')
+    } catch {
       setTrackingState('error')
-      setTrackingError(data?.error || 'We could not complete the tracking lookup. Please try again.')
-      return
+      setTrackingError('The tracking service could not be reached. Please try again in a moment.')
     }
-    setTrackingResult(data)
-    setTrackingState('success')
   }
   const updateForm = (event) => setForm({ ...form, [event.target.name]: event.target.value })
 
@@ -120,7 +125,7 @@ function App() {
           <a href="#contact" onClick={closeMenu}>Contact</a>
         </nav>
         <div className="nav-actions">
-          <a className="login-link nav-admin-link" href="#admin" onClick={closeMenu}>Admin login</a>
+          <a className="button button-small button-admin" href="#admin" onClick={closeMenu}>Admin portal <ArrowUpRight size={15} /></a>
           <a className="button button-small" href="#account" onClick={closeMenu}>Customer login <ArrowUpRight size={15} /></a>
         </div>
       </header>
@@ -139,19 +144,20 @@ function App() {
             <span><Globe2 size={17} /> Worldwide shipping enquiries</span>
           </div>
         </div>
-        <div className="hero-art" aria-label="Illustration representing worldwide delivery routes">
-          <div className="orbit orbit-one" /><div className="orbit orbit-two" />
-          <div className="route route-a" /><div className="route route-b" />
-          <div className="map-dot dot-one"><MapPin size={18} /></div>
-          <div className="map-dot dot-two"><MapPin size={18} /></div>
-          <div className="map-dot dot-three"><MapPin size={18} /></div>
-          <div className="parcel-card">
-            <div className="parcel-icon"><Package size={30} /></div>
-            <div><small>YOUR SHIPMENT</small><strong>Moving forward</strong><span><i /> A clearer way to ship</span></div>
-            <ArrowUpRight className="parcel-arrow" size={19} />
+        <div className="hero-visual">
+          <img
+            className="hero-photo"
+            src="https://honourocean.com/wp-content/uploads/2024/11/freight-forwarder-office.webp"
+            alt="Logistics professional working at a laptop in a shipment office"
+            fetchPriority="high"
+          />
+          <div className="hero-photo-label"><Globe2 size={15} /> WORLDWIDE SHIPPING SUPPORT</div>
+          <div className="hero-tracking-card">
+            <span className="hero-card-icon"><Package size={19} /></span>
+            <div><small>SHIPMENT VISIBILITY</small><strong>Follow every milestone</strong><span>From pickup to arrival</span></div>
+            <a href="#tracking" aria-label="Go to shipment tracking"><ArrowUpRight size={18} /></a>
           </div>
-          <div className="floating-tag"><Globe2 size={16} /> Across the world</div>
-          <div className="hero-stamp">MX<span>•</span></div>
+          <div className="hero-photo-caption"><span><i /> Built around clearer delivery updates</span><strong>Move what matters.</strong></div>
         </div>
       </section>
 
