@@ -108,29 +108,29 @@ function App() {
           {menuOpen ? <X /> : <Menu />}
         </button>
         <nav className={menuOpen ? 'nav open' : 'nav'}>
+          <a href="#home" onClick={closeMenu}>Home</a>
+          <a href="#tracking" onClick={closeMenu}>Track package</a>
           <a href="#services" onClick={closeMenu}>Services</a>
-          <a href="#how-it-works" onClick={closeMenu}>How it works</a>
-          <a href="#tracking" onClick={closeMenu}>Track shipment</a>
           <a href="#about" onClick={closeMenu}>About</a>
           <a href="#contact" onClick={closeMenu}>Contact</a>
         </nav>
         <div className="nav-actions">
-          <a className="login-link" href="#account" onClick={(event) => { event.preventDefault(); document.getElementById('account')?.scrollIntoView({ behavior: 'smooth' }) }}>Customer portal</a>
-          <a className="button button-small" href="#contact">Request a quote <ArrowUpRight size={16} /></a>
+          <a className="login-link" href="#account" onClick={(event) => { event.preventDefault(); document.getElementById('account')?.scrollIntoView({ behavior: 'smooth' }) }}>Login</a>
+          <a className="button button-small" href="#account">Sign up <ArrowUpRight size={16} /></a>
         </div>
       </header>
 
       <section className="hero" id="home">
         <div className="hero-copy">
-          <div className="eyebrow"><span className="pulse" /> WORLDWIDE SHIPPING. ONE SIMPLE EXPERIENCE.</div>
-          <h1>Deliver without<br /><em>borders.</em></h1>
-          <p className="hero-text">From a small parcel to a major shipment, Malvis Express is building a simpler way to move what matters — locally and around the world.</p>
+          <div className="eyebrow"><span className="pulse" /> WORLDWIDE DELIVERY SERVICE</div>
+          <h1>Malvis Express<br />Your <em>Global Delivery</em><br />Partner</h1>
+          <p className="hero-text">Send and receive packages across the world with a simpler shipment experience — from your first enquiry to tracking updates.</p>
           <div className="hero-actions">
-            <a className="button" href="#contact">Plan a shipment <ArrowRight size={17} /></a>
-            <a className="text-link" href="#services">Explore our services <ArrowUpRight size={16} /></a>
+            <a className="button" href="#tracking"><Package size={17} /> Track your package <ArrowRight size={17} /></a>
+            <a className="text-link" href="#services">Learn more <ArrowUpRight size={16} /></a>
           </div>
           <div className="hero-trust">
-            <span><ShieldCheck size={17} /> Shipment visibility</span>
+            <span><ShieldCheck size={17} /> Secure shipment handling</span>
             <span><Globe2 size={17} /> Worldwide shipping enquiries</span>
           </div>
         </div>
@@ -142,18 +142,18 @@ function App() {
           <div className="map-dot dot-three"><MapPin size={18} /></div>
           <div className="parcel-card">
             <div className="parcel-icon"><Package size={30} /></div>
-            <div><small>YOUR SHIPMENT</small><strong>Moving forward</strong><span><i /> A clearer way to ship</span></div>
+            <div><small>MALVIS EXPRESS</small><strong>Global logistics</strong><span><i /> Your delivery, in view</span></div>
             <ArrowUpRight className="parcel-arrow" size={19} />
           </div>
-          <div className="floating-tag"><Globe2 size={16} /> Across the world</div>
+          <div className="floating-tag"><Globe2 size={16} /> Worldwide delivery</div>
           <div className="hero-stamp">MX<span>•</span></div>
         </div>
       </section>
 
       <section className="quick-strip">
-        <div><span className="strip-icon"><Package /></span><span><strong>Multiple shipment types</strong><small>Parcels, freight and documents</small></span></div>
-        <div><span className="strip-icon"><Globe2 /></span><span><strong>Worldwide direction</strong><small>International shipping enquiries</small></span></div>
-        <div><span className="strip-icon"><Clock3 /></span><span><strong>Shipment visibility</strong><small>Tracking with recipient verification</small></span></div>
+        <div><span className="strip-icon"><Globe2 /></span><span><strong>Worldwide shipping</strong><small>International delivery enquiries</small></span></div>
+        <div><span className="strip-icon"><Truck /></span><span><strong>Fast & reliable</strong><small>Road, air and sea options</small></span></div>
+        <div><span className="strip-icon"><ShieldCheck /></span><span><strong>Secure shipments</strong><small>Recipient-verified tracking</small></span></div>
       </section>
 
       <section className="tracking-section" id="tracking">
