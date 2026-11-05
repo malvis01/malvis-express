@@ -1,4 +1,4 @@
-# Malvis Express
+# FedEx-branded delivery platform prototype
 
 Worldwide delivery and shipment management platform.
 
