@@ -430,3 +430,12 @@ main,
 .placeholder-caption { color: #24103f; }
 .placeholder-caption small { color: #ff6600; }
 .hero-track-card { box-shadow: 0 18px 48px rgba(45, 20, 70, .12); }
+
+
+/* Final clean-white page layout */
+html, body, #root, main { background: #fff; }
+.topbar, .hero-redesign, .benefits-strip, .tracking-section, .tracking-panel,
+.reference-services, .service-card, .stats-strip, .how-section, .about-section,
+.portal-section, footer { background-color: #fff; }
+.hero-redesign { background: #fff; }
+.hero-image-placeholder { background: linear-gradient(135deg, #fff 0%, #fbf9fd 65%, #fff8f1 100%); }
