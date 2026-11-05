@@ -145,3 +145,116 @@
   .tracking-section h2 { color: #fff; }
   .tracking-panel .tracking-form { padding: 16px; }
 }
+
+
+/* Homepage direction: clean blue-and-white global logistics brand */
+:root {
+  --navy: #071d42;
+  --blue: #075bea;
+  --blue-deep: #063b9a;
+  --cyan: #79d4e5;
+}
+.topbar {
+  min-height: 86px;
+  padding-left: 4.5%;
+  padding-right: 4.5%;
+  background: rgba(255,255,255,.97);
+}
+.brand { color: #071d42; font-size: 18px; letter-spacing: -.4px; }
+.brand-mark { border-radius: 10px; }
+.nav { color: #172b4d; font-weight: 700; }
+.nav a:hover { color: #075bea; }
+.login-link { color: #102a52; }
+.hero {
+  min-height: 570px;
+  grid-template-columns: .94fr 1.06fr;
+  gap: 34px;
+  padding: 58px 4.5% 58px;
+  background:
+    radial-gradient(circle at 10% 10%, rgba(7,91,234,.08), transparent 32%),
+    linear-gradient(110deg,#f8fbff 0%,#edf4ff 100%);
+}
+.hero h1 {
+  max-width: 620px;
+  font-size: clamp(43px,5vw,66px);
+  line-height: 1.03;
+  letter-spacing: -3px;
+  color: #071d42;
+}
+.hero h1 em { color: #075bea; }
+.hero-text { max-width: 500px; color: #334b6c; font-size: 15px; }
+.hero-art {
+  height: 430px;
+  min-height: 430px;
+  border-radius: 22px;
+  background:
+    linear-gradient(90deg,rgba(4,22,49,.04),rgba(4,22,49,.03)),
+    url('https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1600&q=88') center 43% / cover no-repeat;
+  box-shadow: 0 24px 60px rgba(7,29,66,.16);
+}
+.hero-art::before {
+  background: linear-gradient(180deg,rgba(5,24,52,0) 45%,rgba(5,24,52,.34) 100%);
+}
+.hero-art .parcel-card {
+  left: 20px;
+  bottom: 20px;
+  border-radius: 12px;
+}
+.hero-art .floating-tag { color: #102a52; font-weight: 700; }
+.hero-actions .button { min-height: 52px; }
+.quick-strip {
+  padding: 22px 5%;
+  grid-template-columns: repeat(3,minmax(0,1fr));
+  background: #fff;
+  border: 1px solid #e6eef8;
+  border-radius: 18px;
+  margin: -1px 2.2% 0;
+  position: relative;
+  z-index: 2;
+}
+.quick-strip>div { gap: 13px; }
+.strip-icon { width: 44px; height: 44px; color: #075bea; background: #eaf2ff; }
+.quick-strip strong { color: #102a52; }
+.quick-strip small { color: #71839b; }
+.tracking-section {
+  padding: 78px 7%;
+  background:
+    radial-gradient(circle at 92% 12%,rgba(78,151,255,.2),transparent 34%),
+    linear-gradient(125deg,#061b43 0%,#073b96 100%);
+}
+.tracking-section h2 { color: #fff; font-size: clamp(34px,4vw,48px); }
+.tracking-section h2 em { color: #7ed7ea; }
+.tracking-intro { color: #d0def4; }
+.tracking-panel { width: min(490px,100%); }
+.tracking-panel .tracking-form {
+  padding: 23px;
+  border-radius: 16px;
+  box-shadow: 0 20px 48px rgba(0,0,0,.2);
+}
+.tracking-panel .track-submit { min-height: 48px; }
+.services-section { padding: 82px 7%; background: #f5f8fd; }
+.section-heading h2 { color: #071d42; }
+.service-card { border: 1px solid #e4ecf8; border-radius: 14px; }
+.service-card h3 { color: #102a52; }
+.how-section { background: linear-gradient(120deg,#061b43,#073b96); }
+.quote-section { padding-left: 7%; padding-right: 7%; }
+.quote-form { border-radius: 16px; }
+.about-section { padding-left: 7%; padding-right: 7%; }
+footer { background: #f4f7fc; }
+
+@media (max-width: 900px) {
+  .hero { grid-template-columns: 1fr 1fr; padding-left: 5%; padding-right: 5%; }
+  .hero-art { height: 360px; min-height: 360px; }
+}
+@media (max-width: 650px) {
+  .topbar { padding-left: 5%; padding-right: 5%; }
+  .brand { font-size: 15px; }
+  .nav-actions { gap: 8px; }
+  .nav-actions .button-small { font-size: 10px; }
+  .hero { grid-template-columns: 1fr; padding: 42px 7% 36px; }
+  .hero h1 { font-size: 48px; line-height: 1.04; letter-spacing: -2.5px; }
+  .hero-art { height: 285px; min-height: 285px; margin: 0; transform: none; }
+  .quick-strip { margin: 0; border-radius: 0; grid-template-columns: 1fr; padding: 20px 7%; }
+  .quick-strip>div { border: 0; justify-content: flex-start; }
+  .tracking-section { padding: 58px 7%; }
+}
