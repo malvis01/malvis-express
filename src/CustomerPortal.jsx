@@ -75,21 +75,26 @@ export default function CustomerPortal() {
       return
     }
     const normalizedPhone = normalizePhoneE164(phone)
-    const result = authMode === 'signup'
-      ? await supabase.auth.signUp({
-          email: authEmail,
-          password,
-          options: { data: { display_name: displayName.trim(), phone_e164: normalizedPhone } },
-        })
-      : await supabase.auth.signInWithPassword({ email: authEmail, password })
-    setAuthBusy(false)
-    if (result.error) { setError(result.error.message); return }
-    if (result.data.user && !result.data.session) {
-      setError('Your account was created, but Supabase is waiting for email confirmation. Turn off email confirmations for this phone-only login setup, then try again.')
+    if (authMode === 'signup') {
+      const { data, error: registrationError } = await supabase.functions.invoke('customer-register', {
+        body: { display_name: displayName.trim(), phone_e164: normalizedPhone, password },
+      })
+      setAuthBusy(false)
+      if (registrationError || data?.error || data?.created !== true) {
+        setError(data?.error || registrationError?.message || 'We could not create your account. Please try again.')
+        return
+      }
+      setAuthMode('signin')
+      setPassword('')
+      setNotice('Your account has been created. Sign in with your phone number and password to continue.')
       return
     }
+
+    const result = await supabase.auth.signInWithPassword({ email: authEmail, password })
+    setAuthBusy(false)
+    if (result.error) { setError(result.error.message); return }
     setUser(result.data.user || null)
-    setNotice(authMode === 'signup' ? 'Your customer account is ready.' : 'Welcome back.')
+    setNotice('Welcome back.')
   }
 
   async function submitRequest(event) {
