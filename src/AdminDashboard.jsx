@@ -234,7 +234,7 @@ export default function AdminDashboard({ onExit }) {
 
   if (authState !== 'ready') {
     return <div className="admin-shell">
-      <header className="admin-top"><a className="brand" href="#home" onClick={onExit} aria-label="FedEx home"><span className="fedex-wordmark"><span>Fed</span><b>Ex</b></span></a><a className="admin-back" href="#home" onClick={onExit}><ArrowLeft size={16} /> Back to website</a></header>
+      <header className="admin-top"><a className="brand" href="#home" onClick={onExit} aria-label="FedEx home"><span className="fedex-brand-lockup"><span className="fedex-wordmark"><span>Fed</span><b>Ex</b></span><span className="fedex-express">Express</span></span></a><a className="admin-back" href="#home" onClick={onExit}><ArrowLeft size={16} /> Back to website</a></header>
       <section className="admin-login-wrap"><form className="admin-login-card" onSubmit={signIn}>
         <span className="admin-lock"><Package size={25} /></span><div className="eyebrow dark-eyebrow">SECURE OPERATIONS</div>
         <h1>Administrator<br /><em>sign in.</em></h1><p>Enter your administrator password to access FedEx operations.</p>
