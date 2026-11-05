@@ -124,7 +124,7 @@ function App() {
       <section className="hero" id="home">
         <div className="hero-copy">
           <div className="eyebrow"><span className="pulse" /> WORLDWIDE DELIVERY SERVICE</div>
-          <h1>FedEx<br />Your <em>Global Delivery</em><br />Partner</h1>
+          <h1>Global shipping,<br />made <em>simpler</em></h1>
           <p className="hero-text">Send and receive packages across the world with a simpler shipment experience — from your first enquiry to tracking updates.</p>
           <div className="hero-actions">
             <a className="button" href="#tracking"><Package size={17} /> Track your package <ArrowRight size={17} /></a>
@@ -220,7 +220,7 @@ function App() {
 
       <div id="account"><CustomerPortal /></div>
 
-      <footer><a className="brand footer-brand" href="#home" aria-label="FedEx home"><img className="fedex-logo-img footer-logo-img" src="/fedex-express-logo.jpg" alt="FedEx Express" /></a><span>© {new Date().getFullYear()} FedEx. Built to move what matters.</span><span className="footer-status"><i /> {isSupabaseConfigured ? 'Backend project connected' : 'Backend setup pending'}</span><a className="admin-footer-link" href="#admin">Admin access</a></footer>
+      <footer><a className="brand footer-brand" href="#home" aria-label="FedEx home"><img className="fedex-logo-img footer-logo-img" src="/fedex-express-logo.jpg" alt="FedEx Express" /></a><span>Prototype preview · Prepared for FedEx review.</span><span className="footer-status"><i /> {isSupabaseConfigured ? 'Backend project connected' : 'Backend setup pending'}</span><a className="admin-footer-link" href="#admin">Admin access</a></footer>
     </main>
   )
 }
