@@ -254,10 +254,10 @@ export default function AdminDashboard({ onExit }) {
 
   if (authState !== 'ready') {
     return <div className="admin-shell">
-      <header className="admin-top"><a className="brand" href="#home" onClick={onExit}><span className="brand-mark"><Package size={22} /></span><span>MALVIS<span className="brand-light"> EXPRESS</span></span></a><a className="admin-back" href="#home" onClick={onExit}><ArrowLeft size={16} /> Back to website</a></header>
+      <header className="admin-top"><a className="brand" href="#home" onClick={onExit}><span className="brand-mark"><Package size={22} /></span><span>Fed<span className="fedex-orange">Ex</span></span></a><a className="admin-back" href="#home" onClick={onExit}><ArrowLeft size={16} /> Back to website</a></header>
       <section className="admin-login-wrap"><form className="admin-login-card" onSubmit={signIn}>
         <span className="admin-lock"><Package size={25} /></span><div className="eyebrow dark-eyebrow">SECURE OPERATIONS</div>
-        <h1>Administrator<br /><em>sign in.</em></h1><p>Enter the administrator password to open the Malvis Express operations dashboard.</p>
+        <h1>Administrator<br /><em>sign in.</em></h1><p>Enter the administrator password to open the FedEx concept operations dashboard.</p>
         <label>Administrator password<input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Enter administrator password" autoComplete="current-password" required /></label>
         {authError && <div className="admin-error"><AlertCircle size={16} /> {authError}</div>}
         <button className="button admin-submit" type="submit">Sign in to dashboard <ArrowRight size={16} /></button>
@@ -267,7 +267,7 @@ export default function AdminDashboard({ onExit }) {
   }
 
   return <div className="admin-shell">
-    <header className="admin-top"><a className="brand" href="#home" onClick={onExit}><span className="brand-mark"><Package size={22} /></span><span>MALVIS<span className="brand-light"> EXPRESS</span></span></a><div className="admin-top-actions"><span className="admin-user-label">Administrator</span><button className="admin-plain-button" onClick={signOut}><LogOut size={16} /> Sign out</button></div></header>
+    <header className="admin-top"><a className="brand" href="#home" onClick={onExit}><span className="brand-mark"><Package size={22} /></span><span>Fed<span className="fedex-orange">Ex</span></span></a><div className="admin-top-actions"><span className="admin-user-label">Administrator</span><button className="admin-plain-button" onClick={signOut}><LogOut size={16} /> Sign out</button></div></header>
     <main className="admin-main">
       <div className="admin-heading"><div><div className="eyebrow dark-eyebrow">OPERATIONS CONTROL</div><h1>Shipment <em>dashboard.</em></h1><p>Manage shipment records, issue tracking numbers and publish delivery progress.</p></div><button className="button" onClick={() => { setShowCreate(!showCreate); setEditing(null); setNotice(''); setError('') }}><Plus size={17} /> New shipment</button></div>
       <div className="admin-stats"><div><span><Package size={18} /></span><small>Total shipments</small><strong>{shipments.length}</strong></div><div><span><Truck size={18} /></span><small>In progress</small><strong>{shipments.filter((item) => !['delivered','cancelled','returned'].includes(item.status)).length}</strong></div><div><span><CheckCircle2 size={18} /></span><small>Delivered</small><strong>{shipments.filter((item) => item.status === 'delivered').length}</strong></div></div>
