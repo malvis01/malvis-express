@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { ArrowLeft, ArrowRight, LogOut, Package, RefreshCw, Search, Plus, CheckCircle2, AlertCircle, Truck, Clock3, Copy } from 'lucide-react'
+import { ArrowLeft, ArrowRight, LogOut, Package, RefreshCw, Search, Plus, CheckCircle2, AlertCircle, Truck, Clock3, Copy, MessageCircle } from 'lucide-react'
 import { supabase } from './lib/supabase'
 import AdminPayments from './AdminPayments.jsx'
+import AdminSupport from './AdminSupport.jsx'
 
 // The administrator email is an internal sign-in identifier; the page only asks for a password.
 const ADMIN_AUTH_EMAIL = 'malvisdabz@gmail.com'
@@ -55,6 +56,7 @@ export default function AdminDashboard({ onExit }) {
   const [error, setError] = useState('')
   const [editing, setEditing] = useState(null)
   const [paymentDeliveryId, setPaymentDeliveryId] = useState(null)
+  const [supportDeliveryId, setSupportDeliveryId] = useState(null)
   const [eventForm, setEventForm] = useState({ status: 'in_transit', location_label: '', description: '' })
 
   const verifyAdmin = useCallback(async (candidate) => {
@@ -316,6 +318,8 @@ export default function AdminDashboard({ onExit }) {
             <div className="shipment-meta"><span>{item.delivery_type} · {item.service_scope}</span><span>{item.tracking_code_issued ? 'Tracking issued' : 'Tracking not issued'}</span></div>
             <div className="shipment-actions"><button className="admin-plain-button" onClick={() => navigator.clipboard.writeText(item.tracking_number).then(() => setNotice('Tracking code copied: ' + item.tracking_number))}><Copy size={14} /> Copy tracking code</button><button className="admin-plain-button" onClick={() => { setEditing(item); setShowCreate(false); setEventForm({ status: item.status, location_label: '', description: '' }); setError(''); setNotice('') }}>Update location / status <ArrowRight size={14} /></button><button className="admin-plain-button" onClick={() => { setPaymentDeliveryId(paymentDeliveryId === item.id ? null : item.id); setEditing(null); setShowCreate(false); setError(''); setNotice('') }}>Quote / payments</button></div>
             {paymentDeliveryId === item.id && <AdminPayments delivery={item} adminId={user.id} onUpdated={loadData} />}
+            <button className="admin-plain-button" onClick={() => setSupportDeliveryId(supportDeliveryId === item.id ? null : item.id)}><MessageCircle size={14}/> Receiver support</button>
+            {supportDeliveryId === item.id && <AdminSupport delivery={item} adminId={user.id} />}
           </article>)}</div>}
       </section>
       <p className="admin-footnote"><Clock3 size={14} /> Admin changes are recorded in the database audit log. Bank transfers are confirmed manually; automatic payment gateways and carrier integrations are not enabled.</p>
