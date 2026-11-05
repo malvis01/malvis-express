@@ -101,7 +101,7 @@ function App() {
     <main>
       <header className="topbar">
         <a className="brand" href="#home" aria-label="FedEx home">
-          <span className="fedex-brand-lockup"><span className="fedex-wordmark"><span>Fed</span><b>Ex</b></span><span className="fedex-express">Express</span></span>
+          <img className="fedex-logo-img" src="/fedex-express-logo.jpg" alt="FedEx Express" />
         </a>
         <button className="menu-toggle" onClick={() => setMenuOpen(!menuOpen)} aria-label="Toggle navigation">
           {menuOpen ? <X /> : <Menu />}
@@ -218,7 +218,7 @@ function App() {
 
       <div id="account"><CustomerPortal /></div>
 
-      <footer><a className="brand footer-brand" href="#home" aria-label="FedEx home"><span className="fedex-wordmark"><span>Fed</span><b>Ex</b></span></a><span>© {new Date().getFullYear()} FedEx. Built to move what matters.</span><span className="footer-status"><i /> {isSupabaseConfigured ? 'Backend project connected' : 'Backend setup pending'}</span><a className="admin-footer-link" href="#admin">Admin access</a></footer>
+      <footer><a className="brand footer-brand" href="#home" aria-label="FedEx home"><img className="fedex-logo-img footer-logo-img" src="/fedex-express-logo.jpg" alt="FedEx Express" /></a><span>© {new Date().getFullYear()} FedEx. Built to move what matters.</span><span className="footer-status"><i /> {isSupabaseConfigured ? 'Backend project connected' : 'Backend setup pending'}</span><a className="admin-footer-link" href="#admin">Admin access</a></footer>
     </main>
   )
 }
