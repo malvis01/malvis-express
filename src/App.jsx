@@ -165,6 +165,12 @@ function App() {
           {trackingState === 'success' && trackingResult && <div className="tracking-result">
             <div className="result-heading"><span><CheckCircle2 size={17} /> Shipment found</span><strong>{trackingResult.shipment.tracking_number}</strong></div>
             <div className="result-current"><small>CURRENT STATUS</small><strong>{statusLabels[trackingResult.shipment.status] || trackingResult.shipment.status}</strong><span>{trackingResult.shipment.delivery_type} · {trackingResult.shipment.service_scope}</span></div>
+            <div className="tracking-parties" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', padding: '16px 0', borderBottom: '1px solid #edf1f3' }}>
+              <div><small>SENDER</small><b style={{ display: 'block', marginTop: '5px' }}>{trackingResult.shipment.pickup_contact_name || '—'}</b><span>{trackingResult.shipment.pickup_location_label || '—'}</span></div>
+              <div><small>RECEIVER</small><b style={{ display: 'block', marginTop: '5px' }}>{trackingResult.shipment.dropoff_contact_name || '—'}</b><span>{trackingResult.shipment.dropoff_location_label || '—'}</span></div>
+            </div>
+            {trackingResult.shipment.customer_note && <p className="tracking-package-note" style={{ fontSize: '11px', color: '#657b87', lineHeight: 1.6, paddingTop: '12px' }}>{trackingResult.shipment.customer_note}</p>}
+            {trackingResult.shipment.package_image_url && <img src={trackingResult.shipment.package_image_url} alt="Package" style={{ maxWidth: '100%', maxHeight: '190px', objectFit: 'contain', marginTop: '10px', borderRadius: '6px' }} />}
             <div className="timeline"><strong>Shipment updates</strong>
               {trackingResult.events.length ? trackingResult.events.map((item, index) => <div className="timeline-item" key={item.status + item.occurred_at}><i className={index === trackingResult.events.length - 1 ? 'timeline-dot active' : 'timeline-dot'} /><div><b>{statusLabels[item.status] || item.status}</b>{item.location_label && <small>{item.location_label}</small>}{item.description && <small>{item.description}</small>}<small>{formatDate(item.occurred_at)}</small></div></div>) : <p className="timeline-empty">No progress updates have been recorded yet. Check again later.</p>}
             </div>
