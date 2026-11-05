@@ -118,9 +118,10 @@ function App() {
           {menuOpen ? <X /> : <Menu />}
         </button>
         <nav className={menuOpen ? 'nav open' : 'nav'}>
-          <a href="#home" onClick={closeMenu}>Home</a>\n          <a href="#tracking" onClick={closeMenu}>Track shipment</a>\n          <a href="#services" onClick={closeMenu}>Services</a>
-          <a href="#how-it-works" onClick={closeMenu}>How it works</a>
+          <a href="#home" onClick={closeMenu}>Home</a>
           <a href="#tracking" onClick={closeMenu}>Track shipment</a>
+          <a href="#services" onClick={closeMenu}>Services</a>
+          <a href="#how-it-works" onClick={closeMenu}>How it works</a>
           <a href="#about" onClick={closeMenu}>About</a>
           <a href="#contact" onClick={closeMenu}>Contact</a>
         </nav>
