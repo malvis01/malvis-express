@@ -24,7 +24,7 @@ const labelStyle = { display: 'block', marginBottom: '14px', fontWeight: 600, co
 
 export default function CustomerPortal() {
   const [user, setUser] = useState(null)
-  const [authMode, setAuthMode] = useState('signin')
+  const [authMode, setAuthMode] = useState(window.location.hash === '#signup' ? 'signup' : 'signin')
   const [phone, setPhone] = useState('')
   const [password, setPassword] = useState('')
   const [displayName, setDisplayName] = useState('')
@@ -35,6 +35,15 @@ export default function CustomerPortal() {
   const [shipments, setShipments] = useState([])
   const [form, setForm] = useState(blank)
   const [proofFiles, setProofFiles] = useState({})
+
+  useEffect(() => {
+    const syncAuthMode = () => {
+      if (window.location.hash === '#signup') setAuthMode('signup')
+      else if (window.location.hash === '#account') setAuthMode('signin')
+    }
+    window.addEventListener('hashchange', syncAuthMode)
+    return () => window.removeEventListener('hashchange', syncAuthMode)
+  }, [])
 
   useEffect(() => {
     if (!supabase) return
