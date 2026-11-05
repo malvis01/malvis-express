@@ -6,6 +6,7 @@ import {
 } from 'lucide-react'
 import { isSupabaseConfigured, supabase } from './lib/supabase'
 import AdminDashboard from './AdminDashboard.jsx'
+import SupportChat from './SupportChat.jsx'
 
 const services = [
   { icon: Package, title: 'Parcels & documents', text: 'For personal packages, important documents and everyday deliveries.' },
@@ -147,6 +148,8 @@ function App() {
             <div className="timeline"><strong>Shipment updates</strong>
               {trackingResult.events.length ? trackingResult.events.map((item, index) => <div className="timeline-item" key={item.status + item.occurred_at}><i className={index === trackingResult.events.length - 1 ? 'timeline-dot active' : 'timeline-dot'} /><div><b>{statusLabels[item.status] || item.status}</b>{item.location_label && <small>{item.location_label}</small>}{item.description && <small>{item.description}</small>}<small>{formatDate(item.occurred_at)}</small></div></div>) : <p className="timeline-empty">No progress updates have been recorded yet. Check again later.</p>}
             </div>
+            {trackingResult.events.length > 0 && <div className="tracking-current-location"><MapPin size={17}/><span><small>LAST REPORTED LOCATION</small><b>{trackingResult.events[trackingResult.events.length - 1].location_label || 'Location not yet provided'}</b></span></div>}
+            <SupportChat shipment={trackingResult.shipment} />
           </div>}
         </div>
       </section>
