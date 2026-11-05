@@ -224,9 +224,9 @@ function App() {
 
       <section className="quote-section" id="contact">
         <div className="quote-copy">
-          <div className="eyebrow dark-eyebrow">START A SHIPPING ENQUIRY</div>
-          <h2>Where does it<br /><em>need to go?</em></h2>
-          <p>Tell us a little about your shipment. Send an enquiry and the FedEx concept team can follow up with you.</p>
+          <div className="eyebrow dark-eyebrow">CONTACT OUR TEAM</div>
+          <h2>How can we<br /><em>help you?</em></h2>
+          <p>Reach out to our team for assistance with delivery options, shipment information and customer support.</p>
           <div className="contact-points"><span><Mail size={17} /> Send a shipment enquiry</span><span><Compass size={17} /> Local and international routes</span><span><Boxes size={17} /> Parcels and cargo enquiries</span></div>
         </div>
         <form className="quote-form" name="shipment-enquiry" method="POST" data-netlify="true" netlify-honeypot="bot-field" onSubmit={submitEnquiry}>
