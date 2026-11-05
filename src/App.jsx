@@ -129,6 +129,7 @@ function App() {
           <a className="button button-signup" href="#account-signup" onClick={closeMenu}><UserPlus size={16} /> Sign Up</a>
         </div>
       </header>
+      <div className="fedex-concept-banner">Independent FedEx concept website — not an official FedEx website and not affiliated with FedEx.</div>
 
       <section className="hero hero-redesign" id="home">
         <div className="hero-copy">
