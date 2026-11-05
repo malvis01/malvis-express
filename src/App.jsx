@@ -87,7 +87,7 @@ function App() {
   return (
     <main>
       <header className="topbar">
-        <a className="brand brand-logo" href="#home" aria-label="FedEx concept home">
+        <a className="brand brand-logo" href="#home" aria-label="FedEx home">
           <span className="brand-mark"><Truck size={29} strokeWidth={2.5} /></span>
           <span className="brand-wordmark"><strong>Fed<span className="fedex-orange">Ex</span></strong><small>Delivering More, Faster!</small></span>
         </a>
@@ -105,8 +105,6 @@ function App() {
           <a className="button button-signup" href="#account-signup" onClick={closeMenu}><UserPlus size={16} /> Sign Up</a>
         </div>
       </header>
-      <div className="fedex-concept-banner">Independent FedEx concept website — not an official FedEx website and not affiliated with FedEx.</div>
-
       <section className="hero hero-redesign" id="home">
         <div className="hero-copy">
           <div className="eyebrow hero-badge"><Globe2 size={16} /> Worldwide Delivery Service <i /></div>
@@ -117,7 +115,7 @@ function App() {
             <a className="button hero-secondary" href="#services"><span className="play-mark">▶</span> Learn More</a>
           </div>
         </div>
-        <div className="hero-visual hero-image-placeholder" role="img" aria-label="FedEx concept global logistics image area">
+        <div className="hero-visual hero-image-placeholder" role="img" aria-label="Global logistics image area">
           <div className="placeholder-topline"><span className="placeholder-mark"><Globe2 size={19} /></span><span>GLOBAL LOGISTICS SOLUTIONS</span></div>
           <div className="placeholder-globe"><Globe2 size={150} strokeWidth={0.7} /></div>
           <div className="placeholder-route route-one"><i /><span /><b /></div>
@@ -198,7 +196,7 @@ function App() {
         <div className="steps"><div><b>01</b><strong>Tell us what you need to send</strong><p>Share the shipment type, pickup location, destination and contact details.</p></div><div><b>02</b><strong>Discuss your delivery option</strong><p>Our team can review the route and follow up about available service and pricing.</p></div><div><b>03</b><strong>Prepare for shipment</strong><p>Once operations are active, shipment confirmation and tracking updates will be provided.</p></div></div>
       </section>
 
-      <section className="about-section" id="about"><div className="about-icon"><Globe2 size={28} /></div><div><div className="eyebrow dark-eyebrow">BUILT TO CONNECT DISTANCES</div><h2>Moving goods.<br /><em>Bringing people closer.</em></h2></div><p>This independent FedEx concept is being developed as a worldwide delivery and shipment management platform, bringing shipment management, logistics coordination and tracking into one place.</p></section>
+      <section className="about-section" id="about"><div className="about-icon"><Globe2 size={28} /></div><div><div className="eyebrow dark-eyebrow">BUILT TO CONNECT DISTANCES</div><h2>Moving goods.<br /><em>Bringing people closer.</em></h2></div><p>We provide a worldwide delivery and shipment management experience, bringing logistics coordination and tracking into one place.</p></section>
 
       <section className="portal-section" id="account">
         <div className="portal-icon"><FileText size={23} /></div>
@@ -206,7 +204,7 @@ function App() {
         <a className="portal-action" href="#account">Customer login <ArrowRight size={15} /></a>
       </section>
 
-      <footer><a className="brand footer-brand" href="#home"><span className="brand-mark"><Package size={20} /></span><span>Fed<span className="fedex-orange">Ex</span></span></a><span>© {new Date().getFullYear()} FedEx concept. Independent, unofficial website.</span><span className="footer-status"><i /> {isSupabaseConfigured ? 'Backend project connected' : 'Backend setup pending'}</span><a className="admin-footer-link" href="#admin">Admin access</a></footer>
+      <footer><a className="brand footer-brand" href="#home"><span className="brand-mark"><Package size={20} /></span><span>Fed<span className="fedex-orange">Ex</span></span></a><span>© {new Date().getFullYear()} FedEx.</span><span className="footer-status"><i /> {isSupabaseConfigured ? 'Backend project connected' : 'Backend setup pending'}</span><a className="admin-footer-link" href="#admin">Admin access</a></footer>
     </main>
   )
 }
