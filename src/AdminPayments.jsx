@@ -58,7 +58,7 @@ export default function AdminPayments({ delivery, adminId, onUpdated }) {
     }
     const { error: reviewError } = await supabase.from('payment_proofs').update({
       status, reviewed_by: adminId, reviewed_at: new Date().toISOString(),
-      admin_note: status === 'confirmed' ? 'Transfer verified by Malvis Express.' : 'Please contact Malvis Express for assistance and submit valid evidence.',
+      admin_note: status === 'confirmed' ? 'Transfer verified by the shipping team.' : 'Please contact the shipping team for assistance and submit valid evidence.',
     }).eq('id', proof.id)
     if (reviewError) {
       setError(status === 'confirmed'

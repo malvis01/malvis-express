@@ -2,9 +2,9 @@ name: Build verification
 
 on:
   push:
-    branches: [main]
+    branches: [main, feature/fresh-supabase-foundation, feature/fedex-brand-refresh]
   pull_request:
-    branches: [main]
+    branches: [main, feature/fresh-supabase-foundation]
 
 jobs:
   build:

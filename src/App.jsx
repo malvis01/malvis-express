@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react'
 import {
   ArrowRight, ArrowUpRight, Globe2, Package, MapPin, ShieldCheck,
-  Clock3, Menu, X, Truck, Plane, Ship, CheckCircle2, Mail, Phone,
+  Clock3, Menu, X, Truck, Plane, Ship, CheckCircle2, Mail,
   Send, Compass, Boxes, FileText
 } from 'lucide-react'
 import { isSupabaseConfigured, supabase } from './lib/supabase'
 import AdminDashboard from './AdminDashboard.jsx'
-import CustomerPortal from './CustomerPortal.jsx'
 
 const services = [
   { icon: Package, title: 'Parcels & documents', text: 'For personal packages, important documents and everyday deliveries.' },
@@ -26,7 +25,6 @@ function App() {
   }, [])
   const [menuOpen, setMenuOpen] = useState(false)
   const [trackingCode, setTrackingCode] = useState('')
-  const [trackingPhone, setTrackingPhone] = useState('')
   const [trackingState, setTrackingState] = useState('idle')
   const [trackingResult, setTrackingResult] = useState(null)
   const [trackingError, setTrackingError] = useState('')
@@ -65,7 +63,7 @@ function App() {
       return
     }
     const { data, error } = await supabase.functions.invoke('public-shipment-tracking', {
-      body: { tracking_number: trackingCode, phone_last4: trackingPhone },
+      body: { tracking_number: trackingCode }, 
     })
     if (error || data?.error) {
       setTrackingState('error')
@@ -100,9 +98,8 @@ function App() {
   return (
     <main>
       <header className="topbar">
-        <a className="brand" href="#home" aria-label="Malvis Express home">
-          <span className="brand-mark"><Package size={22} /></span>
-          <span>MALVIS<span className="brand-light"> EXPRESS</span></span>
+        <a className="brand" href="#home" aria-label="Shipping portal home">
+          <img className="fedex-logo-img" src="/fedex-express-logo.jpg" alt="FedEx Express" />
         </a>
         <button className="menu-toggle" onClick={() => setMenuOpen(!menuOpen)} aria-label="Toggle navigation">
           {menuOpen ? <X /> : <Menu />}
@@ -113,17 +110,17 @@ function App() {
           <a href="#services" onClick={closeMenu}>Services</a>
           <a href="#about" onClick={closeMenu}>About</a>
           <a href="#contact" onClick={closeMenu}>Contact</a>
+          <a href="#admin" onClick={closeMenu}>Admin login</a>
         </nav>
-        <div className="nav-actions">
-          <a className="login-link" href="#account" onClick={(event) => { event.preventDefault(); window.location.hash = '#account'; document.getElementById('account')?.scrollIntoView({ behavior: 'smooth' }) }}>Login</a>
-          <a className="button button-small" href="#signup" onClick={(event) => { event.preventDefault(); window.location.hash = '#signup'; document.getElementById('account')?.scrollIntoView({ behavior: 'smooth' }) }}>Sign up <ArrowUpRight size={16} /></a>
-        </div>
+        <div className="nav-actions"><a className="button button-small" href="#admin">Admin portal <ArrowUpRight size={16} /></a></div>
       </header>
+
+      <div className="prototype-notice" role="note">Shipment operations are managed on this platform · Carrier API access requires authorization.</div>
 
       <section className="hero" id="home">
         <div className="hero-copy">
           <div className="eyebrow"><span className="pulse" /> WORLDWIDE DELIVERY SERVICE</div>
-          <h1>Malvis Express<br />Your <em>Global Delivery</em><br />Partner</h1>
+          <h1>Global shipping,<br />made <em>simpler</em></h1>
           <p className="hero-text">Send and receive packages across the world with a simpler shipment experience — from your first enquiry to tracking updates.</p>
           <div className="hero-actions">
             <a className="button" href="#tracking"><Package size={17} /> Track your package <ArrowRight size={17} /></a>
@@ -142,11 +139,11 @@ function App() {
           <div className="map-dot dot-three"><MapPin size={18} /></div>
           <div className="parcel-card">
             <div className="parcel-icon"><Package size={30} /></div>
-            <div><small>MALVIS EXPRESS</small><strong>Global logistics</strong><span><i /> Your delivery, in view</span></div>
+            <div><small>FedEx</small><strong>Global logistics</strong><span><i /> Your delivery, in view</span></div>
             <ArrowUpRight className="parcel-arrow" size={19} />
           </div>
           <div className="floating-tag"><Globe2 size={16} /> Worldwide delivery</div>
-          <div className="hero-stamp">MX<span>•</span></div>
+          <div className="hero-stamp">EXPRESS<span>•</span></div>
         </div>
       </section>
 
@@ -157,19 +154,23 @@ function App() {
       </section>
 
       <section className="tracking-section" id="tracking">
-        <div><div className="eyebrow dark-eyebrow">SHIPMENT TRACKING</div><h2>Every delivery has a story.<br /><em>Follow yours.</em></h2><p className="tracking-intro">Enter your tracking number and the last four digits of the recipient's phone number to view shipment progress.</p></div>
+        <div><div className="eyebrow dark-eyebrow">SHIPMENT TRACKING</div><h2>Every delivery has a story.<br /><em>Follow yours.</em></h2><p className="tracking-intro">Enter the tracking code provided by the shipment administrator to view shipment progress.</p></div>
         <div className="tracking-panel">
           <form className="tracking-form" onSubmit={trackShipment}>
-            <label htmlFor="tracking-code">Malvis Express tracking number</label>
-            <div className="tracking-input"><Package size={19} /><input id="tracking-code" value={trackingCode} onChange={(e) => setTrackingCode(e.target.value.toUpperCase())} placeholder="MX-REQ-XXXXXXXXXX" autoComplete="off" required /><button type="submit" aria-label="Track shipment" disabled={trackingState === 'loading'}><ArrowRight /></button></div>
-            <label className="phone-last4-label" htmlFor="tracking-phone">Recipient phone — last four digits</label>
-            <div className="tracking-input"><Phone size={18} /><input id="tracking-phone" inputMode="numeric" maxLength="4" value={trackingPhone} onChange={(e) => setTrackingPhone(e.target.value.replace(/\D/g, '').slice(0, 4))} placeholder="e.g. 4821" required /></div>
+            <label htmlFor="tracking-code">Shipment tracking number</label>
+            <div className="tracking-input"><Package size={19} /><input id="tracking-code" value={trackingCode} onChange={(e) => setTrackingCode(e.target.value.toUpperCase())} placeholder="Enter your shipment reference" autoComplete="off" required /><button type="submit" aria-label="Track shipment" disabled={trackingState === 'loading'}><ArrowRight /></button></div>
             <button className="button track-submit" type="submit" disabled={trackingState === 'loading'}>{trackingState === 'loading' ? 'Checking shipment…' : 'Track shipment'} <ArrowRight size={16} /></button>
             {trackingState === 'error' && <p className="tracking-feedback error">{trackingError}</p>}
           </form>
           {trackingState === 'success' && trackingResult && <div className="tracking-result">
             <div className="result-heading"><span><CheckCircle2 size={17} /> Shipment found</span><strong>{trackingResult.shipment.tracking_number}</strong></div>
             <div className="result-current"><small>CURRENT STATUS</small><strong>{statusLabels[trackingResult.shipment.status] || trackingResult.shipment.status}</strong><span>{trackingResult.shipment.delivery_type} · {trackingResult.shipment.service_scope}</span></div>
+            <div className="tracking-parties" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', padding: '16px 0', borderBottom: '1px solid #edf1f3' }}>
+              <div><small>SENDER</small><b style={{ display: 'block', marginTop: '5px' }}>{trackingResult.shipment.pickup_contact_name || '—'}</b><span>{trackingResult.shipment.pickup_location_label || '—'}</span></div>
+              <div><small>RECEIVER</small><b style={{ display: 'block', marginTop: '5px' }}>{trackingResult.shipment.dropoff_contact_name || '—'}</b><span>{trackingResult.shipment.dropoff_location_label || '—'}</span></div>
+            </div>
+            {trackingResult.shipment.customer_note && <p className="tracking-package-note" style={{ fontSize: '11px', color: '#657b87', lineHeight: 1.6, paddingTop: '12px' }}>{trackingResult.shipment.customer_note}</p>}
+            {trackingResult.shipment.package_image_url && <img src={trackingResult.shipment.package_image_url} alt="Package" style={{ maxWidth: '100%', maxHeight: '190px', objectFit: 'contain', marginTop: '10px', borderRadius: '6px' }} />}
             <div className="timeline"><strong>Shipment updates</strong>
               {trackingResult.events.length ? trackingResult.events.map((item, index) => <div className="timeline-item" key={item.status + item.occurred_at}><i className={index === trackingResult.events.length - 1 ? 'timeline-dot active' : 'timeline-dot'} /><div><b>{statusLabels[item.status] || item.status}</b>{item.location_label && <small>{item.location_label}</small>}{item.description && <small>{item.description}</small>}<small>{formatDate(item.occurred_at)}</small></div></div>) : <p className="timeline-empty">No progress updates have been recorded yet. Check again later.</p>}
             </div>
@@ -193,7 +194,7 @@ function App() {
         <div className="quote-copy">
           <div className="eyebrow dark-eyebrow">START A SHIPPING ENQUIRY</div>
           <h2>Where does it<br /><em>need to go?</em></h2>
-          <p>Tell us a little about your shipment. Send an enquiry and the Malvis Express team can follow up with you.</p>
+          <p>Tell us a little about your shipment. Send an enquiry and the platform operations team can follow up with you.</p>
           <div className="contact-points"><span><Mail size={17} /> Send a shipment enquiry</span><span><Compass size={17} /> Local and international routes</span><span><Boxes size={17} /> Parcels and cargo enquiries</span></div>
         </div>
         <form className="quote-form" name="shipment-enquiry" method="POST" data-netlify="true" netlify-honeypot="bot-field" onSubmit={submitEnquiry}>
@@ -215,11 +216,10 @@ function App() {
         </form>
       </section>
 
-      <section className="about-section" id="about"><div className="about-icon"><Globe2 size={28} /></div><div><div className="eyebrow dark-eyebrow">BUILT TO CONNECT DISTANCES</div><h2>Moving goods.<br /><em>Bringing people closer.</em></h2></div><p>Malvis Express is being developed as a worldwide delivery and shipment management platform, bringing shipment enquiries, logistics coordination and tracking into one place.</p></section>
+      <section className="about-section" id="about"><div className="about-icon"><Globe2 size={28} /></div><div><div className="eyebrow dark-eyebrow">BUILT TO CONNECT DISTANCES</div><h2>Moving goods.<br /><em>Bringing people closer.</em></h2></div><p>This independent platform is being developed for delivery and shipment management, bringing shipment enquiries, logistics coordination and tracking into one place.</p></section>
 
-      <div id="account"><CustomerPortal /></div>
 
-      <footer><a className="brand footer-brand" href="#home"><span className="brand-mark"><Package size={20} /></span><span>MALVIS<span className="brand-light"> EXPRESS</span></span></a><span>© {new Date().getFullYear()} Malvis Express. Built to move what matters.</span><span className="footer-status"><i /> {isSupabaseConfigured ? 'Backend project connected' : 'Backend setup pending'}</span><a className="admin-footer-link" href="#admin">Admin access</a></footer>
+      <footer><a className="brand footer-brand" href="#home" aria-label="FedEx home"><img className="fedex-logo-img footer-logo-img" src="/fedex-express-logo.jpg" alt="FedEx Express" /></a><span>Independent platform preview · Not operated by FedEx.</span><span className="footer-status"><i /> {isSupabaseConfigured ? 'Backend project connected' : 'Backend setup pending'}</span><a className="admin-footer-link" href="#admin">Admin access</a></footer>
     </main>
   )
 }
