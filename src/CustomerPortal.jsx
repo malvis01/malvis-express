@@ -140,7 +140,7 @@ export default function CustomerPortal() {
       {error && <p className="admin-error"><AlertCircle size={16}/> {error}</p>}
       <button className="button" disabled={authBusy}>{authBusy ? 'Please wait…' : authMode === 'signup' ? 'Create customer account' : 'Sign in'} <ArrowRight size={16}/></button>
     </form>
-    <p style={{ marginTop: 18 }}>{authMode === 'signup' ? 'Already registered?' : 'New to Malvis Express?'} <button type="button" className="admin-plain-button" onClick={() => { setAuthMode(authMode === 'signup' ? 'signin' : 'signup'); setError('') }}>{authMode === 'signup' ? 'Sign in' : 'Create an account'}</button></p>
+    <p style={{ marginTop: 18 }}>{authMode === 'signup' ? 'Already registered?' : 'New to FedEx?'} <button type="button" className="admin-plain-button" onClick={() => { setAuthMode(authMode === 'signup' ? 'signin' : 'signup'); setError('') }}>{authMode === 'signup' ? 'Sign in' : 'Create an account'}</button></p>
     <small>Your phone number is used as your login ID. Use the full international format for numbers outside Nigeria. Phone ownership is not verified by SMS.</small>
   </section>
 
