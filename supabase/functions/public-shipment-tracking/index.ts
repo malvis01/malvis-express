@@ -17,7 +17,7 @@ Deno.serve(async (req: Request) => {
   try {
     const body = await req.json();
     const trackingNumber = String(body?.tracking_number ?? "").trim().toUpperCase();
-    if (!/^MX-REQ-[A-F0-9]{10}$/.test(trackingNumber)) {
+    if (!/^MX-REQ-[A-F0-9]{16}$/.test(trackingNumber)) {
       return new Response(JSON.stringify({ error: "Enter a valid tracking number." }), {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
