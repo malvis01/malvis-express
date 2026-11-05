@@ -1,6 +1,6 @@
-# FedEx-branded delivery platform prototype
+# Malvis Express shipment management platform
 
-FedEx-branded shipment management prototype for internal review. It is not an official FedEx-operated service and is not connected to FedEx carrier systems.
+Malvis Express is an independently operated shipment-management platform. It is not an official FedEx service. Any future FedEx carrier integration requires written authorization and approved API credentials.
 
 ## Stack
 
@@ -68,20 +68,20 @@ Before public launch, add persistent rate limiting and abuse monitoring to the t
 
 - Public website pages and responsive navigation: implemented.
 - Shipment enquiry form: configured for Netlify Forms; it receives submissions only after deployment and Netlify detects the form.
-- Public tracking: Supabase Edge Function returns shipment status and events for internally created demo shipments; verify against the configured Supabase project before review.
+- Public tracking: Supabase Edge Function returns shipment status and events for shipments created in Malvis Express; verify against the configured Supabase project before review.
 - Admin dashboard: phone/password sign-in, admin-role verification, shipment creation, search, status updates and journey events are implemented in the frontend.
 - Customer registration and personal shipment management: implemented with phone/password authentication, shipment requests and private shipment views.
 - Manual bank-transfer payments: admin quote and bank instructions, customer receipt upload to private Storage, admin-only verification/rejection, and tracking-code release after confirmation.
-- Tracking references: newly created records use a `DEMO-` prefix until an approved carrier integration is connected.
+- Tracking references: internally generated shipment references use the `MX-REQ-` prefix and are managed by Malvis Express.
 - Automatic payment gateways and live courier integrations: not connected; bank transfers are verified manually.
-- FedEx carrier APIs and official production integrations: pending authorization, API credentials and technical specifications from FedEx.
+- FedEx carrier APIs and official carrier services: pending written authorization, API credentials and technical specifications from FedEx.
 
 ## Before FedEx review and production
 
 1. Confirm authorization to use FedEx trademarks and supplied logo assets for this project.
 2. Apply the latest Supabase migrations and verify the prototype's database and Edge Function configuration.
 3. Run the production build and complete customer/admin/payment/tracking end-to-end tests.
-4. Keep demo tracking references and manual payment verification clearly identified during review.
+4. Keep internal tracking references and manual payment verification clearly described during review.
 5. Only after written approval and technical access, implement FedEx carrier API adapters and server-side credential storage.
 
 ## Before public launch
