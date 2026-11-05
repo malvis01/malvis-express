@@ -119,6 +119,8 @@ function App() {
         </div>
       </header>
 
+      <div className="prototype-notice" role="note">DEMONSTRATION PREVIEW · Carrier APIs and live FedEx systems are not connected yet.</div>
+
       <section className="hero" id="home">
         <div className="hero-copy">
           <div className="eyebrow"><span className="pulse" /> WORLDWIDE DELIVERY SERVICE</div>
