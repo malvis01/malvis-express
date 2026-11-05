@@ -100,7 +100,7 @@ function App() {
   return (
     <main>
       <header className="topbar">
-        <a className="brand" href="#home" aria-label="FedEx home">
+        <a className="brand" href="#home" aria-label="Shipping portal home">
           <img className="fedex-logo-img" src="/fedex-express-logo.jpg" alt="FedEx Express" />
         </a>
         <button className="menu-toggle" onClick={() => setMenuOpen(!menuOpen)} aria-label="Toggle navigation">
@@ -194,7 +194,7 @@ function App() {
         <div className="quote-copy">
           <div className="eyebrow dark-eyebrow">START A SHIPPING ENQUIRY</div>
           <h2>Where does it<br /><em>need to go?</em></h2>
-          <p>Tell us a little about your shipment. Send an enquiry and the FedEx team can follow up with you.</p>
+          <p>Tell us a little about your shipment. Send an enquiry and the platform operations team can follow up with you.</p>
           <div className="contact-points"><span><Mail size={17} /> Send a shipment enquiry</span><span><Compass size={17} /> Local and international routes</span><span><Boxes size={17} /> Parcels and cargo enquiries</span></div>
         </div>
         <form className="quote-form" name="shipment-enquiry" method="POST" data-netlify="true" netlify-honeypot="bot-field" onSubmit={submitEnquiry}>
@@ -216,11 +216,11 @@ function App() {
         </form>
       </section>
 
-      <section className="about-section" id="about"><div className="about-icon"><Globe2 size={28} /></div><div><div className="eyebrow dark-eyebrow">BUILT TO CONNECT DISTANCES</div><h2>Moving goods.<br /><em>Bringing people closer.</em></h2></div><p>FedEx is being developed as a worldwide delivery and shipment management platform, bringing shipment enquiries, logistics coordination and tracking into one place.</p></section>
+      <section className="about-section" id="about"><div className="about-icon"><Globe2 size={28} /></div><div><div className="eyebrow dark-eyebrow">BUILT TO CONNECT DISTANCES</div><h2>Moving goods.<br /><em>Bringing people closer.</em></h2></div><p>This independent platform is being developed for delivery and shipment management, bringing shipment enquiries, logistics coordination and tracking into one place.</p></section>
 
       <div id="account"><CustomerPortal /></div>
 
-      <footer><a className="brand footer-brand" href="#home" aria-label="FedEx home"><img className="fedex-logo-img footer-logo-img" src="/fedex-express-logo.jpg" alt="FedEx Express" /></a><span>Prototype preview · Prepared for FedEx review.</span><span className="footer-status"><i /> {isSupabaseConfigured ? 'Backend project connected' : 'Backend setup pending'}</span><a className="admin-footer-link" href="#admin">Admin access</a></footer>
+      <footer><a className="brand footer-brand" href="#home" aria-label="FedEx home"><img className="fedex-logo-img footer-logo-img" src="/fedex-express-logo.jpg" alt="FedEx Express" /></a><span>Independent platform preview · Not operated by FedEx.</span><span className="footer-status"><i /> {isSupabaseConfigured ? 'Backend project connected' : 'Backend setup pending'}</span><a className="admin-footer-link" href="#admin">Admin access</a></footer>
     </main>
   )
 }
