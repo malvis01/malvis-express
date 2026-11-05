@@ -101,8 +101,9 @@ function App() {
           <a href="#about" onClick={closeMenu}>About</a>
         </nav>
         <div className="nav-actions">
-          <a className="button button-login" href="#account" onClick={closeMenu}><UserRound size={16} /> Login</a>
+          <a className="button button-login" href="#account" onClick={closeMenu}><UserRound size={16} /> Customer Login</a>
           <a className="button button-signup" href="#account-signup" onClick={closeMenu}><UserPlus size={16} /> Sign Up</a>
+          <a className="button button-login admin-nav-link" href="#admin" onClick={closeMenu}><ShieldCheck size={16} /> Admin Login</a>
         </div>
       </header>
       <section className="hero hero-redesign" id="home">
