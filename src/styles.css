@@ -78,3 +78,27 @@
  .portal-section{gap:12px}
  .portal-action{margin-left:60px}
 }
+
+
+/* Refined photographic landing hero and clearer admin access */
+.button-admin{background:#1d7892;border:1px solid #1d7892;box-shadow:0 6px 16px #1d789226;white-space:nowrap}
+.button-admin:hover{background:#155d73;border-color:#155d73}
+.button-admin:focus-visible,.button:focus-visible,.nav a:focus-visible,.text-link:focus-visible{outline:3px solid #e8a65f;outline-offset:3px}
+.hero-visual{height:430px;min-width:0;position:relative;border-radius:18px;overflow:visible;background:#dce8eb;box-shadow:0 28px 70px #183b4d22}
+.hero-photo{display:block;width:100%;height:100%;object-fit:cover;object-position:center;border-radius:18px}
+.hero-visual:after{content:'';position:absolute;inset:0;border-radius:18px;background:linear-gradient(180deg,#102a4308 38%,#102a43a8 100%);pointer-events:none}
+.hero-photo-label{position:absolute;z-index:1;top:20px;left:20px;display:flex;align-items:center;gap:8px;padding:10px 13px;border:1px solid #ffffff75;border-radius:30px;background:#ffffffed;color:#23485a;font-size:9px;font-weight:800;letter-spacing:1px}
+.hero-tracking-card{position:absolute;z-index:2;right:-22px;bottom:74px;display:flex;align-items:center;gap:12px;max-width:285px;padding:15px;background:#fff;border:1px solid #e6eef1;border-radius:10px;box-shadow:0 15px 40px #102a4328}
+.hero-card-icon{width:42px;height:42px;flex:none;display:grid;place-items:center;border-radius:9px;background:#edf5f7;color:#1d7892}
+.hero-tracking-card>div{min-width:0}
+.hero-tracking-card small,.hero-tracking-card strong,.hero-tracking-card span{display:block}
+.hero-tracking-card small{font-size:8px;letter-spacing:1.2px;color:#8a9ca7;font-weight:800}
+.hero-tracking-card strong{font:700 12px Manrope,sans-serif;color:#102a43;margin:5px 0}
+.hero-tracking-card span{font-size:9px;color:#7b8f99}
+.hero-tracking-card>a{width:30px;height:30px;flex:none;display:grid;place-items:center;border-radius:6px;background:#102a43;color:#fff}
+.hero-photo-caption{position:absolute;z-index:1;left:24px;bottom:23px;color:#fff}
+.hero-photo-caption span{display:flex;align-items:center;gap:8px;font-size:10px;color:#f1f6f7}
+.hero-photo-caption span i{width:7px;height:7px;border-radius:50%;background:#7bd5ae;box-shadow:0 0 0 4px #7bd5ae35}
+.hero-photo-caption strong{display:block;font:800 23px Manrope,sans-serif;letter-spacing:-.7px;margin-top:7px}
+@media(max-width:900px){.hero-visual{height:370px}.hero-tracking-card{right:-8px}}
+@media(max-width:650px){.hero-visual{height:310px;margin:4px 8px 18px 0;border-radius:13px}.hero-photo{border-radius:13px}.hero-visual:after{border-radius:13px}.hero-photo-label{top:13px;left:13px;font-size:8px;padding:8px 10px}.hero-tracking-card{right:-5px;bottom:58px;max-width:245px;padding:12px;gap:9px}.hero-card-icon{width:36px;height:36px}.hero-tracking-card strong{font-size:11px}.hero-photo-caption{left:16px;bottom:17px}.hero-photo-caption strong{font-size:19px}.button-admin{padding:10px 9px;font-size:10px}.nav-admin-link{display:none!important}}
