@@ -145,7 +145,7 @@ function App() {
             <ArrowUpRight className="parcel-arrow" size={19} />
           </div>
           <div className="floating-tag"><Globe2 size={16} /> Worldwide delivery</div>
-          <div className="hero-stamp">MX<span>•</span></div>
+          <div className="hero-stamp">EXPRESS<span>•</span></div>
         </div>
       </section>
 
@@ -159,8 +159,8 @@ function App() {
         <div><div className="eyebrow dark-eyebrow">SHIPMENT TRACKING</div><h2>Every delivery has a story.<br /><em>Follow yours.</em></h2><p className="tracking-intro">Enter your tracking number and the last four digits of the recipient's phone number to view shipment progress.</p></div>
         <div className="tracking-panel">
           <form className="tracking-form" onSubmit={trackShipment}>
-            <label htmlFor="tracking-code">FedEx tracking number</label>
-            <div className="tracking-input"><Package size={19} /><input id="tracking-code" value={trackingCode} onChange={(e) => setTrackingCode(e.target.value.toUpperCase())} placeholder="MX-REQ-XXXXXXXXXX" autoComplete="off" required /><button type="submit" aria-label="Track shipment" disabled={trackingState === 'loading'}><ArrowRight /></button></div>
+            <label htmlFor="tracking-code">Shipment tracking number</label>
+            <div className="tracking-input"><Package size={19} /><input id="tracking-code" value={trackingCode} onChange={(e) => setTrackingCode(e.target.value.toUpperCase())} placeholder="Enter your shipment reference" autoComplete="off" required /><button type="submit" aria-label="Track shipment" disabled={trackingState === 'loading'}><ArrowRight /></button></div>
             <label className="phone-last4-label" htmlFor="tracking-phone">Recipient phone — last four digits</label>
             <div className="tracking-input"><Phone size={18} /><input id="tracking-phone" inputMode="numeric" maxLength="4" value={trackingPhone} onChange={(e) => setTrackingPhone(e.target.value.replace(/\D/g, '').slice(0, 4))} placeholder="e.g. 4821" required /></div>
             <button className="button track-submit" type="submit" disabled={trackingState === 'loading'}>{trackingState === 'loading' ? 'Checking shipment…' : 'Track shipment'} <ArrowRight size={16} /></button>
