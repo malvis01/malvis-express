@@ -118,7 +118,7 @@ function App() {
           {menuOpen ? <X /> : <Menu />}
         </button>
         <nav className={menuOpen ? 'nav open' : 'nav'}>
-          <a href="#services" onClick={closeMenu}>Services</a>
+          <a href="#home" onClick={closeMenu}>Home</a>\n          <a href="#tracking" onClick={closeMenu}>Track shipment</a>\n          <a href="#services" onClick={closeMenu}>Services</a>
           <a href="#how-it-works" onClick={closeMenu}>How it works</a>
           <a href="#tracking" onClick={closeMenu}>Track shipment</a>
           <a href="#about" onClick={closeMenu}>About</a>
@@ -130,34 +130,29 @@ function App() {
         </div>
       </header>
 
-      <section className="hero" id="home">
+      <section className="hero hero-redesign" id="home">
         <div className="hero-copy">
-          <div className="eyebrow"><span className="pulse" /> WORLDWIDE SHIPPING. ONE SIMPLE EXPERIENCE.</div>
-          <h1>Deliver without<br /><em>borders.</em></h1>
-          <p className="hero-text">From a small parcel to a major shipment, Malvis Express is building a simpler way to move what matters — locally and around the world.</p>
+          <div className="eyebrow"><span className="pulse" /> INTERNATIONAL LOGISTICS & DELIVERY</div>
+          <h1>Malvis Express.<br /><em>Ship Anywhere, Anytime!</em></h1>
+          <p className="hero-text">A simpler way to move parcels, documents and cargo. Explore delivery options, send a shipment enquiry and keep up with your shipment progress from one place.</p>
           <div className="hero-actions">
-            <a className="button" href="#contact">Plan a shipment <ArrowRight size={17} /></a>
+            <a className="button" href="#tracking">Track your shipment <ArrowRight size={17} /></a>
             <a className="text-link" href="#services">Explore our services <ArrowUpRight size={16} /></a>
           </div>
           <div className="hero-trust">
-            <span><ShieldCheck size={17} /> Shipment visibility</span>
-            <span><Globe2 size={17} /> Worldwide shipping enquiries</span>
+            <span><ShieldCheck size={17} /> Clear shipment updates</span>
+            <span><Globe2 size={17} /> Local & international enquiries</span>
           </div>
         </div>
-        <div className="hero-visual">
-          <img
-            className="hero-photo"
-            src="https://honourocean.com/wp-content/uploads/2024/11/freight-forwarder-office.webp"
-            alt="Logistics professional working at a laptop in a shipment office"
-            fetchPriority="high"
-          />
-          <div className="hero-photo-label"><Globe2 size={15} /> WORLDWIDE SHIPPING SUPPORT</div>
-          <div className="hero-tracking-card">
-            <span className="hero-card-icon"><Package size={19} /></span>
-            <div><small>SHIPMENT VISIBILITY</small><strong>Follow every milestone</strong><span>From pickup to arrival</span></div>
-            <a href="#tracking" aria-label="Go to shipment tracking"><ArrowUpRight size={18} /></a>
-          </div>
-          <div className="hero-photo-caption"><span><i /> Built around clearer delivery updates</span><strong>Move what matters.</strong></div>
+        <div className="hero-visual hero-image-placeholder" role="img" aria-label="Malvis Express logistics team image coming soon">
+          <div className="placeholder-topline"><span className="placeholder-mark"><Package size={18} /></span><span>YOUR DELIVERY. OUR PRIORITY.</span></div>
+          <div className="placeholder-globe"><Globe2 size={118} strokeWidth={0.8} /></div>
+          <div className="placeholder-route route-one"><i /><span /><b /></div>
+          <div className="placeholder-route route-two"><i /><span /><b /></div>
+          <div className="placeholder-plane"><Plane size={31} /></div>
+          <div className="placeholder-package"><Package size={42} /></div>
+          <div className="placeholder-caption"><small>CONNECTED THROUGH LOGISTICS</small><strong>Moving what matters,<br />across every distance.</strong></div>
+          <div className="placeholder-chip"><CheckCircle2 size={15} /> Shipment updates in one place</div>
         </div>
       </section>
 
