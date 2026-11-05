@@ -1,0 +1,4 @@
+project_id = "pgkkojkcbjvhbtcqccmu"
+
+[functions.public-shipment-tracking]
+verify_jwt = false

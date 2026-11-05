@@ -1,0 +1,93 @@
+/* FedEx project brand layer — applied after the shared responsive layout. */
+:root {
+  --navy: #2b174c;
+  --blue: #4d148c;
+  --blue-deep: #3b0b70;
+  --cyan: #ff8a00;
+  --muted: #625477;
+  --fedex-purple: #4d148c;
+  --fedex-orange: #ff6600;
+}
+body { color: #281344; background: #fff; }
+.topbar { border-bottom-color: #eee7f5; }
+.brand { color: var(--fedex-purple); letter-spacing: -1px; }
+.fedex-wordmark {
+  display: inline-flex;
+  align-items: baseline;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 31px;
+  line-height: 1;
+  font-weight: 800;
+  letter-spacing: -2px;
+  font-style: italic;
+}
+.fedex-wordmark span { color: var(--fedex-purple); }
+.fedex-wordmark b { color: var(--fedex-orange); font-weight: 800; }
+.fedex-brand-lockup { display: inline-flex; flex-direction: column; align-items: flex-end; gap: 0; }
+.fedex-express {
+  color: #24118f;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 13px;
+  line-height: 1;
+  font-weight: 400;
+  letter-spacing: 2.8px;
+  margin-top: 2px;
+  padding-right: 2px;
+}
+.footer-brand .fedex-wordmark { font-size: 25px; }
+.footer-brand .fedex-express { font-size: 10px; letter-spacing: 2px; }
+.button, .tracking-panel .tracking-input button, .tracking-panel .track-submit {
+  background: linear-gradient(115deg, var(--fedex-purple), #351064);
+  box-shadow: 0 8px 18px rgba(77,20,140,.18);
+}
+.button:hover { background: #351064; }
+.hero {
+  background:
+    radial-gradient(circle at 10% 8%, rgba(255,102,0,.08), transparent 30%),
+    linear-gradient(110deg,#fff 0%,#f7f2fb 100%);
+}
+.hero h1 em, h1 em, h2 em, .section-heading h2 em { color: var(--fedex-orange); }
+.eyebrow { color: #765b91; }
+.pulse { background: var(--fedex-orange); box-shadow: 0 0 0 5px rgba(255,102,0,.12); }
+.hero-art { box-shadow: 0 24px 60px rgba(45,16,75,.18); }
+.parcel-icon, .strip-icon, .service-icon, .about-icon {
+  color: var(--fedex-purple);
+  background: #f2eafa;
+}
+.quick-strip { border-color: #eee6f5; }
+.tracking-section {
+  background:
+    radial-gradient(circle at 92% 12%,rgba(255,102,0,.17),transparent 34%),
+    linear-gradient(125deg,#32105f 0%,#4d148c 100%);
+}
+.tracking-section h2 em, .how-section h2 em { color: #ff9a3d; }
+.how-section { background: linear-gradient(120deg,#32105f,#4d148c); }
+.service-card { border-color: #eee6f5; }
+.form-grid input:focus, .form-grid select:focus, .form-grid textarea:focus,
+.admin-form-grid input:focus, .admin-form-grid select:focus,
+.admin-form-grid textarea:focus, .admin-login-card input:focus {
+  border-color: var(--fedex-purple);
+  box-shadow: 0 0 0 3px rgba(77,20,140,.11);
+}
+.admin-shell { color: #281344; background: #f8f5fb; }
+.admin-heading h1 em, .admin-login-card h1 em { color: var(--fedex-orange); }
+.admin-stats>div>span, .admin-lock { background: #f2eafa; color: var(--fedex-purple); }
+.admin-notice { background: #edf8f1; }
+.admin-footer-link { color: var(--fedex-purple); }
+.status-in_transit, .status-out_for_delivery, .status-package_picked_up {
+  background: #f2eafa; color: var(--fedex-purple);
+}
+@media (max-width: 650px) {
+  .fedex-wordmark { font-size: 27px; }
+  .fedex-express { font-size: 11px; }
+  .footer-brand .fedex-wordmark { font-size: 23px; }
+}
+
+.fedex-logo-img { display:block; width: 164px; height:auto; max-height:72px; object-fit:contain; }
+.footer-logo-img { width:132px; max-height:58px; }
+.admin-top .fedex-logo-img { width:156px; }
+@media(max-width:650px){.fedex-logo-img{width:138px}.footer-logo-img{width:118px}}
+
+.prototype-notice { padding: 9px 20px; text-align:center; background:#f7f2fb; color:#4d148c; border-bottom:1px solid #eadff4; font-size:11px; font-weight:700; letter-spacing:.08em; }
+
+.fedex-text-logo{display:inline-flex;align-items:baseline;gap:4px;font:800 30px/1 Arial,Helvetica,sans-serif;letter-spacing:-1.8px;color:#4d148c}.fedex-text-logo small{font-size:12px;letter-spacing:1px;font-weight:700;color:#ff6600}

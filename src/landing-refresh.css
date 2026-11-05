@@ -1,0 +1,260 @@
+/* Responsive landing-page layout foundation */
+:root {
+  --navy: #0b2140;
+  --blue: #1265e8;
+  --blue-deep: #0b3b87;
+  --cyan: #69c9dc;
+  --muted: #667b91;
+}
+.topbar {
+  position: sticky;
+  top: 0;
+  box-shadow: 0 8px 26px rgba(11, 33, 64, .055);
+  backdrop-filter: blur(14px);
+}
+.brand-mark {
+  background: linear-gradient(145deg, #1265e8, #0b3b87);
+  box-shadow: 0 7px 18px rgba(18, 101, 232, .2);
+}
+.button {
+  background: linear-gradient(120deg, #1265e8, #0b3b87);
+  border-radius: 8px;
+  box-shadow: 0 8px 18px rgba(18, 101, 232, .16);
+}
+.button:hover { background: #0b3b87; }
+.hero {
+  min-height: 590px;
+  padding-top: 76px;
+  padding-bottom: 76px;
+  background:
+    radial-gradient(circle at 8% 8%, rgba(18, 101, 232, .08), transparent 30%),
+    linear-gradient(115deg, #f8fbff 0%, #edf4ff 100%);
+}
+.hero h1 { letter-spacing: -3.6px; }
+.hero h1 em { color: #1265e8; }
+.hero-art {
+  min-height: 420px;
+  height: 420px;
+  border-radius: 22px;
+  overflow: hidden;
+  isolation: isolate;
+  background:
+    linear-gradient(90deg, rgba(5, 24, 52, .08), rgba(5, 24, 52, .04)),
+    url('https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1400&q=85') center 45% / cover no-repeat;
+  box-shadow: 0 28px 65px rgba(11, 33, 64, .18);
+}
+.hero-art::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: linear-gradient(180deg, rgba(5, 24, 52, .02) 35%, rgba(5, 24, 52, .35) 100%);
+  pointer-events: none;
+}
+.hero-art > .orbit, .hero-art > .route, .hero-art > .map-dot, .hero-art > .hero-stamp { display: none; }
+.hero-art .parcel-card {
+  position: absolute;
+  left: 22px;
+  bottom: 22px;
+  min-width: min(285px, calc(100% - 44px));
+  border: 1px solid rgba(255,255,255,.65);
+  box-shadow: 0 14px 38px rgba(4, 20, 43, .2);
+  backdrop-filter: blur(12px);
+}
+.hero-art .floating-tag {
+  right: 20px;
+  top: 20px;
+  bottom: auto;
+  color: #12345a;
+  border: 1px solid rgba(255,255,255,.7);
+}
+.hero-trust { color: #60778e; }
+.quick-strip {
+  padding-top: 24px;
+  padding-bottom: 24px;
+  box-shadow: 0 12px 30px rgba(11, 33, 64, .035);
+}
+.strip-icon { background: #eaf2ff; color: #1265e8; }
+.tracking-section {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 90% 10%, rgba(67, 145, 255, .18), transparent 32%),
+    linear-gradient(125deg, #071d42 0%, #0b3b87 100%);
+  color: #fff;
+}
+.tracking-section .dark-eyebrow { color: #9dbce8; }
+.tracking-section h2 { color: #fff; }
+.tracking-section h2 em { color: #79d4e5; }
+.tracking-intro { color: #c4d5ed; }
+.tracking-panel .tracking-form {
+  background: rgba(255,255,255,.98);
+  border-color: rgba(255,255,255,.4);
+  box-shadow: 0 18px 45px rgba(0,0,0,.16);
+}
+.tracking-panel .tracking-form label { color: #17395e; }
+.tracking-panel .tracking-input {
+  background: #f8fbff;
+  border-color: #dce7f5;
+}
+.tracking-panel .tracking-input button {
+  background: linear-gradient(135deg, #1265e8, #0b3b87);
+}
+.tracking-panel .track-submit {
+  background: linear-gradient(120deg, #1265e8, #0b3b87);
+}
+.tracking-result { box-shadow: 0 16px 40px rgba(0,0,0,.14); }
+.services-section { background: #f5f8fc; }
+.service-card {
+  border-radius: 12px;
+  box-shadow: 0 7px 22px rgba(11, 33, 64, .035);
+}
+.service-icon { background: #eaf2ff; color: #1265e8; }
+.service-card:hover { box-shadow: 0 18px 38px rgba(11, 33, 64, .09); }
+.how-section { background: linear-gradient(120deg, #071d42, #0b3b87); }
+.how-section h2 em { color: #79d4e5; }
+.quote-section { background: #fff; }
+.quote-form {
+  border-radius: 14px;
+  box-shadow: 0 15px 40px rgba(11, 33, 64, .06);
+}
+.form-grid input:focus, .form-grid select:focus, .form-grid textarea:focus {
+  border-color: #1265e8;
+  box-shadow: 0 0 0 3px rgba(18, 101, 232, .12);
+}
+.about-icon { background: #eaf2ff; color: #1265e8; }
+.admin-footer-link { color: #1265e8; }
+@media (max-width: 900px) {
+  .hero { padding-top: 58px; padding-bottom: 58px; }
+  .hero-art { height: 360px; min-height: 360px; }
+}
+@media (max-width: 650px) {
+  .hero { padding-top: 42px; }
+  .hero h1 { letter-spacing: -2.7px; }
+  .hero-art {
+    height: 290px;
+    min-height: 290px;
+    transform: none;
+    margin: 0;
+    border-radius: 16px;
+    background-position: center;
+  }
+  .hero-art .parcel-card { left: 12px; bottom: 12px; min-width: 0; padding: 13px; }
+  .hero-art .floating-tag { right: 12px; top: 12px; padding: 9px 12px; }
+  .tracking-section { padding-top: 60px; padding-bottom: 60px; }
+  .tracking-section h2 { color: #fff; }
+  .tracking-panel .tracking-form { padding: 16px; }
+}
+
+
+/* Homepage direction: clean blue-and-white global logistics brand */
+:root {
+  --navy: #071d42;
+  --blue: #075bea;
+  --blue-deep: #063b9a;
+  --cyan: #79d4e5;
+}
+.topbar {
+  min-height: 86px;
+  padding-left: 4.5%;
+  padding-right: 4.5%;
+  background: rgba(255,255,255,.97);
+}
+.brand { color: #071d42; font-size: 18px; letter-spacing: -.4px; }
+.brand-mark { border-radius: 10px; }
+.nav { color: #172b4d; font-weight: 700; }
+.nav a:hover { color: #075bea; }
+.login-link { color: #102a52; }
+.hero {
+  min-height: 570px;
+  grid-template-columns: .94fr 1.06fr;
+  gap: 34px;
+  padding: 58px 4.5% 58px;
+  background:
+    radial-gradient(circle at 10% 10%, rgba(7,91,234,.08), transparent 32%),
+    linear-gradient(110deg,#f8fbff 0%,#edf4ff 100%);
+}
+.hero h1 {
+  max-width: 620px;
+  font-size: clamp(43px,5vw,66px);
+  line-height: 1.03;
+  letter-spacing: -3px;
+  color: #071d42;
+}
+.hero h1 em { color: #075bea; }
+.hero-text { max-width: 500px; color: #334b6c; font-size: 15px; }
+.hero-art {
+  height: 430px;
+  min-height: 430px;
+  border-radius: 22px;
+  background:
+    linear-gradient(90deg,rgba(4,22,49,.04),rgba(4,22,49,.03)),
+    url('https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1600&q=88') center 43% / cover no-repeat;
+  box-shadow: 0 24px 60px rgba(7,29,66,.16);
+}
+.hero-art::before {
+  background: linear-gradient(180deg,rgba(5,24,52,0) 45%,rgba(5,24,52,.34) 100%);
+}
+.hero-art .parcel-card {
+  left: 20px;
+  bottom: 20px;
+  border-radius: 12px;
+}
+.hero-art .floating-tag { color: #102a52; font-weight: 700; }
+.hero-actions .button { min-height: 52px; }
+.quick-strip {
+  padding: 22px 5%;
+  grid-template-columns: repeat(3,minmax(0,1fr));
+  background: #fff;
+  border: 1px solid #e6eef8;
+  border-radius: 18px;
+  margin: -1px 2.2% 0;
+  position: relative;
+  z-index: 2;
+}
+.quick-strip>div { gap: 13px; }
+.strip-icon { width: 44px; height: 44px; color: #075bea; background: #eaf2ff; }
+.quick-strip strong { color: #102a52; }
+.quick-strip small { color: #71839b; }
+.tracking-section {
+  padding: 78px 7%;
+  background:
+    radial-gradient(circle at 92% 12%,rgba(78,151,255,.2),transparent 34%),
+    linear-gradient(125deg,#061b43 0%,#073b96 100%);
+}
+.tracking-section h2 { color: #fff; font-size: clamp(34px,4vw,48px); }
+.tracking-section h2 em { color: #7ed7ea; }
+.tracking-intro { color: #d0def4; }
+.tracking-panel { width: min(490px,100%); }
+.tracking-panel .tracking-form {
+  padding: 23px;
+  border-radius: 16px;
+  box-shadow: 0 20px 48px rgba(0,0,0,.2);
+}
+.tracking-panel .track-submit { min-height: 48px; }
+.services-section { padding: 82px 7%; background: #f5f8fd; }
+.section-heading h2 { color: #071d42; }
+.service-card { border: 1px solid #e4ecf8; border-radius: 14px; }
+.service-card h3 { color: #102a52; }
+.how-section { background: linear-gradient(120deg,#061b43,#073b96); }
+.quote-section { padding-left: 7%; padding-right: 7%; }
+.quote-form { border-radius: 16px; }
+.about-section { padding-left: 7%; padding-right: 7%; }
+footer { background: #f4f7fc; }
+
+@media (max-width: 900px) {
+  .hero { grid-template-columns: 1fr 1fr; padding-left: 5%; padding-right: 5%; }
+  .hero-art { height: 360px; min-height: 360px; }
+}
+@media (max-width: 650px) {
+  .topbar { padding-left: 5%; padding-right: 5%; }
+  .brand { font-size: 15px; }
+  .nav-actions { gap: 8px; }
+  .nav-actions .button-small { font-size: 10px; }
+  .hero { grid-template-columns: 1fr; padding: 42px 7% 36px; }
+  .hero h1 { font-size: 48px; line-height: 1.04; letter-spacing: -2.5px; }
+  .hero-art { height: 285px; min-height: 285px; margin: 0; transform: none; }
+  .quick-strip { margin: 0; border-radius: 0; grid-template-columns: 1fr; padding: 20px 7%; }
+  .quick-strip>div { border: 0; justify-content: flex-start; }
+  .tracking-section { padding: 58px 7%; }
+}

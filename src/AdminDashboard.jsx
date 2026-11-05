@@ -1,6 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { ArrowLeft, ArrowRight, LogOut, Package, RefreshCw, Search, Plus, CheckCircle2, AlertCircle, Truck, Clock3 } from 'lucide-react'
+import { ArrowLeft, ArrowRight, LogOut, Package, RefreshCw, Search, Plus, CheckCircle2, AlertCircle, Truck, Clock3, Copy } from 'lucide-react'
 import { supabase } from './lib/supabase'
+import AdminPayments from './AdminPayments.jsx'
+
+// The administrator email is an internal sign-in identifier; the page only asks for a password.
+const ADMIN_AUTH_EMAIL = 'malvisdabz@gmail.com'
 
 const statuses = [
   ['booking_created', 'Shipment request created'],
@@ -26,7 +30,7 @@ const blankShipment = {
   pickup_location_label: '', dropoff_location_label: '',
   pickup_contact_name: '', pickup_contact_phone: '',
   dropoff_contact_name: '', dropoff_contact_phone: '',
-  customer_note: '',
+  customer_note: '', package_image_url: '',
 }
 
 function dateLabel(value) {
@@ -34,24 +38,22 @@ function dateLabel(value) {
 }
 
 export default function AdminDashboard({ onExit }) {
-  // The administrator identity is fixed to the existing, owner-provisioned admin account.
-  // Only the password is entered; authorization is still checked against public.user_roles.
-  const ADMIN_EMAIL = 'malvisdabz@gmail.com'
   const [password, setPassword] = useState('')
   const [authState, setAuthState] = useState('checking')
   const [authError, setAuthError] = useState('')
   const [user, setUser] = useState(null)
   const [shipments, setShipments] = useState([])
   const [customers, setCustomers] = useState([])
-  const [latestEvents, setLatestEvents] = useState({})
   const [loading, setLoading] = useState(false)
   const [search, setSearch] = useState('')
   const [showCreate, setShowCreate] = useState(false)
   const [form, setForm] = useState(blankShipment)
+  const [packageFile, setPackageFile] = useState(null)
   const [saving, setSaving] = useState(false)
   const [notice, setNotice] = useState('')
   const [error, setError] = useState('')
   const [editing, setEditing] = useState(null)
+  const [paymentDeliveryId, setPaymentDeliveryId] = useState(null)
   const [eventForm, setEventForm] = useState({ status: 'in_transit', location_label: '', description: '' })
 
   const verifyAdmin = useCallback(async (candidate) => {
@@ -104,29 +106,12 @@ export default function AdminDashboard({ onExit }) {
     setError('')
     const [shipmentResult, customerResult] = await Promise.all([
       supabase.from('deliveries')
-        .select('id,tracking_number,customer_id,delivery_type,service_scope,status,pickup_location_label,dropoff_location_label,pickup_contact_name,pickup_contact_phone,dropoff_contact_name,dropoff_contact_phone,customer_note,quoted_total,currency_code,created_at,updated_at,tracking_code_issued')
+        .select('id,tracking_number,customer_id,delivery_type,service_scope,status,pickup_location_label,dropoff_location_label,pickup_contact_name,pickup_contact_phone,dropoff_contact_name,dropoff_contact_phone,customer_note,package_image_url,quoted_total,currency_code,created_at,updated_at,tracking_code_issued')
         .order('created_at', { ascending: false }).limit(100),
       supabase.from('profiles').select('id,display_name,phone_e164').order('created_at', { ascending: false }).limit(200),
     ])
     if (shipmentResult.error) setError(shipmentResult.error.message)
-    else {
-      const rows = shipmentResult.data || []
-      setShipments(rows)
-      if (rows.length) {
-        const eventResult = await supabase.from('shipment_events')
-          .select('id,delivery_id,status,location_label,description,occurred_at')
-          .in('delivery_id', rows.map((item) => item.id))
-          .order('occurred_at', { ascending: false })
-        if (eventResult.error) setError((current) => current || eventResult.error.message)
-        else {
-          const latest = {}
-          for (const item of (eventResult.data || [])) {
-            if (!latest[item.delivery_id]) latest[item.delivery_id] = item
-          }
-          setLatestEvents(latest)
-        }
-      } else setLatestEvents({})
-    }
+    else setShipments(shipmentResult.data || [])
     if (customerResult.error) setError((current) => current || customerResult.error.message)
     else setCustomers(customerResult.data || [])
     setLoading(false)
@@ -149,11 +134,11 @@ export default function AdminDashboard({ onExit }) {
     setAuthState('signing')
     setAuthError('')
     const { data, error: loginError } = await supabase.auth.signInWithPassword({
-      email: ADMIN_EMAIL, password,
+      email: ADMIN_AUTH_EMAIL, password,
     })
     if (loginError || !data.user) {
       setAuthState('login')
-      setAuthError('Sign-in failed. Check the administrator password.')
+      setAuthError('Sign-in failed. Check the administrator password and try again.')
       return
     }
     const allowed = await verifyAdmin(data.user)
@@ -173,24 +158,30 @@ export default function AdminDashboard({ onExit }) {
   async function createShipment(event) {
     event.preventDefault()
     if (!supabase || !user) return
-    const recipientPhone = form.dropoff_contact_phone.replace(/\s+/g, '')
-    if (recipientPhone.replace(/\D/g, '').length < 4) {
-      setError('Enter a valid recipient phone number so tracking verification can work.')
-      return
-    }
     setSaving(true)
     setError('')
     setNotice('')
+    let packageImageUrl = null
+    if (packageFile) {
+      const safeName = packageFile.name.replace(/[^a-zA-Z0-9._-]/g, '-')
+      const storagePath = user.id + '/' + crypto.randomUUID() + '-' + safeName
+      const { error: uploadError } = await supabase.storage.from('shipment-packages').upload(storagePath, packageFile, { cacheControl: '3600', upsert: false })
+      if (uploadError) {
+        setError('Package photo upload failed: ' + uploadError.message)
+        setSaving(false)
+        return
+      }
+      packageImageUrl = supabase.storage.from('shipment-packages').getPublicUrl(storagePath).data.publicUrl
+    }
     const insert = {
       ...form,
-      customer_id: form.customer_id || null,
+      customer_id: null,
+      package_image_url: packageImageUrl,
       tracking_code_issued: true,
       tracking_code_issued_at: new Date().toISOString(),
       tracking_code_issued_by: user.id,
       status: 'booking_created',
     }
-    delete insert.customer_id
-    insert.customer_id = form.customer_id || null
     const { data, error: insertError } = await supabase.from('deliveries').insert(insert).select('id,tracking_number').single()
     if (insertError) {
       setError('Could not create shipment: ' + insertError.message)
@@ -206,21 +197,10 @@ export default function AdminDashboard({ onExit }) {
     })
     setNotice(eventError
       ? 'Shipment created as ' + data.tracking_number + ', but its first timeline event could not be saved. Please add an update.'
-      : 'Shipment created. Tracking number: ' + data.tracking_number)
+      : 'Shipment created and tracking code issued: ' + data.tracking_number)
     setForm(blankShipment)
+    setPackageFile(null)
     setShowCreate(false)
-    setSaving(false)
-    await loadData()
-  }
-
-  async function issueTrackingCode(item) {
-    if (!supabase || !user || item.tracking_code_issued) return
-    setSaving(true)
-    setError('')
-    setNotice('')
-    const { data, error: issueError } = await supabase.rpc('admin_issue_tracking_code', { p_delivery_id: item.id })
-    if (issueError) setError('Could not issue tracking code: ' + issueError.message)
-    else setNotice('Tracking number issued for shipment: ' + data)
     setSaving(false)
     await loadData()
   }
@@ -231,18 +211,26 @@ export default function AdminDashboard({ onExit }) {
     setSaving(true)
     setError('')
     setNotice('')
-    const { error: updateError } = await supabase.rpc('admin_update_shipment_progress', {
-      p_delivery_id: editing.id,
-      p_status: eventForm.status,
-      p_location_label: eventForm.location_label,
-      p_description: eventForm.description,
-    })
+    const update = { status: eventForm.status }
+    if (eventForm.status === 'delivered') update.delivered_at = new Date().toISOString()
+    const { error: updateError } = await supabase.from('deliveries').update(update).eq('id', editing.id)
     if (updateError) {
-      setError('Could not save shipment update: ' + updateError.message)
+      setError('Could not update shipment: ' + updateError.message)
       setSaving(false)
       return
     }
-    setNotice('Shipment ' + editing.tracking_number + ' updated. Its status and timeline were saved together.')
+    const { error: eventError } = await supabase.from('shipment_events').insert({
+      delivery_id: editing.id,
+      status: eventForm.status,
+      description: eventForm.description.trim() || null,
+      location_label: eventForm.location_label.trim() || null,
+      recorded_by: user.id,
+    })
+    if (eventError) {
+      setError('Shipment status changed, but the timeline update failed: ' + eventError.message)
+    } else {
+      setNotice('Shipment ' + editing.tracking_number + ' updated.')
+    }
     setEditing(null)
     setSaving(false)
     await loadData()
@@ -254,11 +242,11 @@ export default function AdminDashboard({ onExit }) {
 
   if (authState !== 'ready') {
     return <div className="admin-shell">
-      <header className="admin-top"><a className="brand" href="#home" onClick={onExit}><span className="brand-mark"><Package size={22} /></span><span>Fed<span className="fedex-orange">Ex</span></span></a><a className="admin-back" href="#home" onClick={onExit}><ArrowLeft size={16} /> Back to website</a></header>
+      <header className="admin-top"><a className="brand" href="#home" onClick={onExit} aria-label="FedEx home"><span className="fedex-text-logo">FedEx <small>Express</small></span></a><a className="admin-back" href="#home" onClick={onExit}><ArrowLeft size={16} /> Back to website</a></header>
       <section className="admin-login-wrap"><form className="admin-login-card" onSubmit={signIn}>
         <span className="admin-lock"><Package size={25} /></span><div className="eyebrow dark-eyebrow">SECURE OPERATIONS</div>
-        <h1>Administrator<br /><em>sign in.</em></h1><p>Enter the administrator password to open the FedEx concept operations dashboard.</p>
-        <label>Administrator password<input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Enter administrator password" autoComplete="current-password" required /></label>
+        <h1>Administrator<br /><em>sign in.</em></h1><p>Enter your administrator password to access FedEx operations.</p>
+        <label>Password<input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Your password" autoComplete="current-password" required /></label>
         {authError && <div className="admin-error"><AlertCircle size={16} /> {authError}</div>}
         <button className="button admin-submit" type="submit">Sign in to dashboard <ArrowRight size={16} /></button>
         <small>Administrator access only. Accounts must be created and assigned the admin role by the project owner.</small>
@@ -267,16 +255,15 @@ export default function AdminDashboard({ onExit }) {
   }
 
   return <div className="admin-shell">
-    <header className="admin-top"><a className="brand" href="#home" onClick={onExit}><span className="brand-mark"><Package size={22} /></span><span>Fed<span className="fedex-orange">Ex</span></span></a><div className="admin-top-actions"><span className="admin-user-label">Administrator</span><button className="admin-plain-button" onClick={signOut}><LogOut size={16} /> Sign out</button></div></header>
+    <header className="admin-top"><a className="brand" href="#home" onClick={onExit} aria-label="FedEx home"><span className="fedex-text-logo">FedEx <small>Express</small></span></a><div className="admin-top-actions"><span className="admin-user-label">Administrator</span><button className="admin-plain-button" onClick={signOut}><LogOut size={16} /> Sign out</button></div></header>
     <main className="admin-main">
       <div className="admin-heading"><div><div className="eyebrow dark-eyebrow">OPERATIONS CONTROL</div><h1>Shipment <em>dashboard.</em></h1><p>Manage shipment records, issue tracking numbers and publish delivery progress.</p></div><button className="button" onClick={() => { setShowCreate(!showCreate); setEditing(null); setNotice(''); setError('') }}><Plus size={17} /> New shipment</button></div>
       <div className="admin-stats"><div><span><Package size={18} /></span><small>Total shipments</small><strong>{shipments.length}</strong></div><div><span><Truck size={18} /></span><small>In progress</small><strong>{shipments.filter((item) => !['delivered','cancelled','returned'].includes(item.status)).length}</strong></div><div><span><CheckCircle2 size={18} /></span><small>Delivered</small><strong>{shipments.filter((item) => item.status === 'delivered').length}</strong></div></div>
       {notice && <div className="admin-notice"><CheckCircle2 size={17} /> {notice}</div>}
       {error && <div className="admin-error admin-wide"><AlertCircle size={16} /> {error}</div>}
-      {showCreate && <section className="admin-form-card"><div className="admin-form-title"><div><h2>Create shipment</h2><p>Guest shipments are supported. Select an existing customer account only when one is available.</p></div><button className="admin-plain-button" onClick={() => setShowCreate(false)}>Close</button></div>
+      {showCreate && <section className="admin-form-card"><div className="admin-form-title"><div><h2>Create shipment</h2><p>Guest shipments are supported. Enter shipment details and issue a tracking code for the recipient.</p></div><button className="admin-plain-button" onClick={() => setShowCreate(false)}>Close</button></div>
         <form onSubmit={createShipment}>
           <div className="admin-form-grid">
-            <label>Link customer account (optional)<select value={form.customer_id} onChange={(e) => setForm({ ...form, customer_id: e.target.value })}><option value="">Guest / no account</option>{customers.map((customer) => <option key={customer.id} value={customer.id}>{customer.display_name || 'Customer'} · {customer.phone_e164 || customer.id.slice(0,8)}</option>)}</select></label>
             <label>Delivery type<select value={form.delivery_type} onChange={(e) => setForm({ ...form, delivery_type: e.target.value })}>{types.map((type) => <option key={type} value={type}>{type}</option>)}</select></label>
             <label>Shipping scope<select value={form.service_scope} onChange={(e) => setForm({ ...form, service_scope: e.target.value })}>{scopes.map((scope) => <option key={scope} value={scope}>{scope}</option>)}</select></label>
             <label>Pickup location<input value={form.pickup_location_label} onChange={(e) => setForm({ ...form, pickup_location_label: e.target.value })} placeholder="City, area, country" required /></label>
@@ -285,10 +272,11 @@ export default function AdminDashboard({ onExit }) {
             <label>Sender phone<input value={form.pickup_contact_phone} onChange={(e) => setForm({ ...form, pickup_contact_phone: e.target.value })} placeholder="+234…" required /></label>
             <label>Recipient name<input value={form.dropoff_contact_name} onChange={(e) => setForm({ ...form, dropoff_contact_name: e.target.value })} placeholder="Recipient's full name" required /></label>
             <label>Recipient phone<input value={form.dropoff_contact_phone} onChange={(e) => setForm({ ...form, dropoff_contact_phone: e.target.value })} placeholder="+234…" required /></label>
-            <label className="admin-full">Shipment description<textarea value={form.customer_note} onChange={(e) => setForm({ ...form, customer_note: e.target.value })} rows="3" placeholder="Package description, size, weight or handling notes" /></label>
+            <label className="admin-full">Package description<textarea value={form.customer_note} onChange={(e) => setForm({ ...form, customer_note: e.target.value })} rows="3" placeholder="Package contents, size, weight or handling notes" /></label>
+            <label className="admin-full">Upload package photo<input type="file" accept="image/jpeg,image/png,image/webp" onChange={(e) => setPackageFile(e.target.files?.[0] || null)} /></label>
           </div>
-          <p className="admin-hint">A tracking number will be generated automatically. Customers verify tracking with the last four digits of the recipient's phone.</p>
-          <button className="button" type="submit" disabled={saving}>{saving ? 'Creating shipment…' : 'Create shipment and issue tracking'} <ArrowRight size={16} /></button>
+          <p className="admin-hint">A unique tracking code is generated and issued when this shipment is saved. Give the code to the recipient so they can track without creating an account.</p>
+          <button className="button" type="submit" disabled={saving}>{saving ? 'Creating shipment…' : 'Create shipment & issue tracking code'} <ArrowRight size={16} /></button>
         </form>
       </section>}
       {editing && <section className="admin-form-card"><div className="admin-form-title"><div><h2>Update {editing.tracking_number}</h2><p>Each update is saved to the shipment timeline.</p></div><button className="admin-plain-button" onClick={() => setEditing(null)}>Close</button></div>
@@ -304,11 +292,14 @@ export default function AdminDashboard({ onExit }) {
           <div className="admin-shipment-list">{filtered.map((item) => <article className="admin-shipment" key={item.id}>
             <div className="shipment-row-top"><div><strong>{item.tracking_number}</strong><small>{dateLabel(item.created_at)}</small></div><span className={'status-chip status-' + item.status}>{statuses.find(([value]) => value === item.status)?.[1] || item.status}</span></div>
             <div className="shipment-route"><span>{item.pickup_location_label || 'Pickup not set'}</span><ArrowRight size={15} /><span>{item.dropoff_location_label || 'Destination not set'}</span></div>
-            <div className="shipment-meta"><span>{item.delivery_type} · {item.service_scope}</span><span>To: {item.dropoff_contact_name || 'Recipient'} · {item.dropoff_contact_phone || 'No phone'}</span><span>Current location: {latestEvents[item.id]?.location_label || item.pickup_location_label || 'Not updated'}</span><span>{item.tracking_code_issued ? 'Tracking issued' : 'Tracking not issued'}</span></div>
-            <div className="shipment-actions">{!item.tracking_code_issued && <button className="admin-plain-button" onClick={() => issueTrackingCode(item)} disabled={saving}><CheckCircle2 size={14} /> Issue tracking number</button>}<button className="admin-plain-button" onClick={() => { setEditing(item); setShowCreate(false); setEventForm({ status: item.status, location_label: latestEvents[item.id]?.location_label || item.pickup_location_label || '', description: '' }); setError(''); setNotice('') }}>Update status <ArrowRight size={14} /></button></div>
+            <div className="shipment-meta"><span>From: {item.pickup_contact_name || 'Sender'} · {item.pickup_contact_phone || 'No phone'}</span><span>To: {item.dropoff_contact_name || 'Recipient'} · {item.dropoff_contact_phone || 'No phone'}</span></div>
+            {item.package_image_url && <img src={item.package_image_url} alt="Shipment package" style={{ width: '112px', height: '84px', objectFit: 'cover', borderRadius: '6px', marginTop: '12px' }} />}
+            <div className="shipment-meta"><span>{item.delivery_type} · {item.service_scope}</span><span>{item.tracking_code_issued ? 'Tracking issued' : 'Tracking not issued'}</span></div>
+            <div className="shipment-actions"><button className="admin-plain-button" onClick={() => navigator.clipboard.writeText(item.tracking_number).then(() => setNotice('Tracking code copied: ' + item.tracking_number))}><Copy size={14} /> Copy tracking code</button><button className="admin-plain-button" onClick={() => { setEditing(item); setShowCreate(false); setEventForm({ status: item.status, location_label: '', description: '' }); setError(''); setNotice('') }}>Update status <ArrowRight size={14} /></button><button className="admin-plain-button" onClick={() => { setPaymentDeliveryId(paymentDeliveryId === item.id ? null : item.id); setEditing(null); setShowCreate(false); setError(''); setNotice('') }}>Quote / payments</button></div>
+            {paymentDeliveryId === item.id && <AdminPayments delivery={item} adminId={user.id} onUpdated={loadData} />}
           </article>)}</div>}
       </section>
-      <p className="admin-footnote"><Clock3 size={14} /> Admin changes are recorded in the database audit log. Payment collection and carrier integrations are not enabled yet.</p>
+      <p className="admin-footnote"><Clock3 size={14} /> Admin changes are recorded in the database audit log. Bank transfers are confirmed manually; automatic payment gateways and carrier integrations are not enabled.</p>
     </main>
   </div>
 }
