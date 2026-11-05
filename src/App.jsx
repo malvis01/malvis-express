@@ -90,8 +90,6 @@ function App() {
         <div className="nav-actions"><a className="button button-small" href="#admin">Admin portal <ArrowUpRight size={16} /></a></div>
       </header>
 
-      <div className="prototype-notice" role="note">Shipment operations are managed on this platform · Carrier API access requires authorization.</div>
-
       <section className="hero" id="home">
         <div className="hero-copy">
           <div className="eyebrow"><span className="pulse" /> WORLDWIDE DELIVERY SERVICE</div>
