@@ -74,8 +74,8 @@ function App() {
   return (
     <main>
       <header className="topbar">
-        <a className="brand" href="#home" aria-label="Shipping portal home">
-          <span className="fedex-text-logo">FedEx <small>Express</small></span>
+        <a className="brand" href="#home" aria-label="Flash Express Delivery Service home">
+          <span className="fedex-text-logo">Flash <small>Express</small></span>
         </a>
         <button className="menu-toggle" onClick={() => setMenuOpen(!menuOpen)} aria-label="Toggle navigation">
           {menuOpen ? <X /> : <Menu />}
@@ -112,7 +112,7 @@ function App() {
           <div className="map-dot dot-three"><MapPin size={18} /></div>
           <div className="parcel-card">
             <div className="parcel-icon"><Package size={30} /></div>
-            <div><small>FedEx</small><strong>Global logistics</strong><span><i /> Your delivery, in view</span></div>
+            <div><small>Flash Express</small><strong>Global logistics</strong><span><i /> Your delivery, in view</span></div>
             <ArrowUpRight className="parcel-arrow" size={19} />
           </div>
           <div className="floating-tag"><Globe2 size={16} /> Worldwide delivery</div>
@@ -166,7 +166,7 @@ function App() {
       <section className="about-section" id="about"><div className="about-icon"><Globe2 size={28} /></div><div><div className="eyebrow dark-eyebrow">BUILT TO CONNECT DISTANCES</div><h2>Moving goods.<br /><em>Bringing people closer.</em></h2></div><p>This independent platform is being developed for delivery and shipment management, bringing shipment enquiries, logistics coordination and tracking into one place.</p></section>
 
 
-      <footer><a className="brand footer-brand" href="#home" aria-label="FedEx home"><span className="fedex-text-logo">FedEx <small>Express</small></span></a><span>Independent platform preview · Not operated by FedEx.</span><span className="footer-status"><i /> {isSupabaseConfigured ? 'Backend project connected' : 'Backend setup pending'}</span><a className="admin-footer-link" href="#admin">Admin access</a></footer>
+      <footer><a className="brand footer-brand" href="#home" aria-label="Flash Express home"><span className="fedex-text-logo">Flash <small>Express</small></span></a><span>Flash Express Delivery Service · Shipment management and tracking</span><span className="footer-status"><i /> {isSupabaseConfigured ? 'Backend project connected' : 'Backend setup pending'}</span><a className="admin-footer-link" href="#admin">Admin access</a></footer>
     </main>
   )
 }
