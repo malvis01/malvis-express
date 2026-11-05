@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 import {
   ArrowRight, ArrowUpRight, Globe2, Package, MapPin, ShieldCheck,
-  Clock3, Menu, X, Truck, Plane, Ship, CheckCircle2, Mail, Phone,
-  Send, Compass, Boxes, FileText, UserRound, UserPlus, Headphones, Handshake, ChevronDown, Search
+  Clock3, Menu, X, Truck, Plane, Ship, CheckCircle2, Phone,
+  FileText, UserRound, UserPlus, Headphones, Handshake, ChevronDown, Search
 } from 'lucide-react'
 import { isSupabaseConfigured, supabase } from './lib/supabase'
 import AdminDashboard from './AdminDashboard.jsx'
@@ -11,8 +11,8 @@ import CustomerPortal from './CustomerPortal.jsx'
 const services = [
   { icon: Package, title: 'Parcels & documents', text: 'For personal packages, important documents and everyday deliveries.' },
   { icon: Truck, title: 'Road freight', text: 'Road transportation for goods, business supplies and larger consignments.' },
-  { icon: Plane, title: 'Air cargo', text: 'Air-freight enquiries for time-sensitive international shipments.' },
-  { icon: Ship, title: 'Sea freight', text: 'Sea-freight enquiries for bulk cargo and larger international movements.' },
+  { icon: Plane, title: 'Air cargo', text: 'Air-freight options for time-sensitive international shipments.' },
+  { icon: Ship, title: 'Sea freight', text: 'Sea-freight options for bulk cargo and larger international movements.' },
 ]
 
 function App() {
@@ -189,16 +189,16 @@ function App() {
       <section className="stats-strip">
         <div><span><Package /></span><strong>One platform</strong><small>Shipment requests</small></div>
         <div><span><UserRound /></span><strong>Customer accounts</strong><small>Sign in and manage shipments</small></div>
-        <div><span><Globe2 /></span><strong>Global reach</strong><small>International enquiries</small></div>
+        <div><span><Globe2 /></span><strong>Global reach</strong><small>International delivery</small></div>
         <div><span><ShieldCheck /></span><strong>Safe & organised</strong><small>Shipment visibility</small></div>
       </section>
 
       <section className="how-section" id="how-it-works">
-        <div className="eyebrow">A CLEARER WAY TO SHIP</div><h2>From enquiry to <em>arrival.</em></h2>
+        <div className="eyebrow">A CLEARER WAY TO SHIP</div><h2>From pickup to <em>arrival.</em></h2>
         <div className="steps"><div><b>01</b><strong>Tell us what you need to send</strong><p>Share the shipment type, pickup location, destination and contact details.</p></div><div><b>02</b><strong>Discuss your delivery option</strong><p>Our team can review the route and follow up about available service and pricing.</p></div><div><b>03</b><strong>Prepare for shipment</strong><p>Once operations are active, shipment confirmation and tracking updates will be provided.</p></div></div>
       </section>
 
-      <section className="about-section" id="about"><div className="about-icon"><Globe2 size={28} /></div><div><div className="eyebrow dark-eyebrow">BUILT TO CONNECT DISTANCES</div><h2>Moving goods.<br /><em>Bringing people closer.</em></h2></div><p>This independent FedEx concept is being developed as a worldwide delivery and shipment management platform, bringing shipment enquiries, logistics coordination and tracking into one place.</p></section>
+      <section className="about-section" id="about"><div className="about-icon"><Globe2 size={28} /></div><div><div className="eyebrow dark-eyebrow">BUILT TO CONNECT DISTANCES</div><h2>Moving goods.<br /><em>Bringing people closer.</em></h2></div><p>This independent FedEx concept is being developed as a worldwide delivery and shipment management platform, bringing shipment management, logistics coordination and tracking into one place.</p></section>
 
       <section className="portal-section" id="account">
         <div className="portal-icon"><FileText size={23} /></div>
