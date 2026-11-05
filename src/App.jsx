@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import {
   ArrowRight, ArrowUpRight, Globe2, Package, MapPin, ShieldCheck,
   Clock3, Menu, X, Truck, Plane, Ship, CheckCircle2, Mail, Phone,
-  Send, Compass, Boxes, FileText
+  Send, Compass, Boxes, FileText, UserRound, UserPlus, Headphones, Handshake, ChevronDown, Search
 } from 'lucide-react'
 import { isSupabaseConfigured, supabase } from './lib/supabase'
 import AdminDashboard from './AdminDashboard.jsx'
@@ -19,11 +19,11 @@ const initialForm = { name: '', email: '', phone: '', origin: '', destination: '
 
 function App() {
   const [adminMode, setAdminMode] = useState(window.location.hash === '#admin')
-  const [customerMode, setCustomerMode] = useState(window.location.hash === '#account')
+  const [customerMode, setCustomerMode] = useState(window.location.hash.startsWith('#account'))
   useEffect(() => {
     const syncRoute = () => {
       setAdminMode(window.location.hash === '#admin')
-      setCustomerMode(window.location.hash === '#account')
+      setCustomerMode(window.location.hash.startsWith('#account'))
     }
     window.addEventListener('hashchange', syncRoute)
     return () => window.removeEventListener('hashchange', syncRoute)
@@ -105,62 +105,69 @@ function App() {
   }
 
   if (adminMode) return <AdminDashboard onExit={() => { window.location.hash = '#home'; setAdminMode(false); setCustomerMode(false) }} />
-  if (customerMode) return <CustomerPortal onExit={() => { window.location.hash = '#home'; setCustomerMode(false); setAdminMode(false) }} />
+  if (customerMode) return <CustomerPortal initialMode={window.location.hash.includes('signup') ? 'register' : 'login'} onExit={() => { window.location.hash = '#home'; setCustomerMode(false); setAdminMode(false) }} />
 
   return (
     <main>
       <header className="topbar">
-        <a className="brand" href="#home" aria-label="Malvis Express home">
-          <span className="brand-mark"><Package size={22} /></span>
-          <span>MALVIS<span className="brand-light"> EXPRESS</span></span>
+        <a className="brand brand-logo" href="#home" aria-label="Malvis Express home">
+          <span className="brand-mark"><Truck size={29} strokeWidth={2.5} /></span>
+          <span className="brand-wordmark"><strong>Malvis<br />Express</strong><small>Delivering More, Faster!</small></span>
         </a>
         <button className="menu-toggle" onClick={() => setMenuOpen(!menuOpen)} aria-label="Toggle navigation">
           {menuOpen ? <X /> : <Menu />}
         </button>
         <nav className={menuOpen ? 'nav open' : 'nav'}>
-          <a href="#home" onClick={closeMenu}>Home</a>
-          <a href="#tracking" onClick={closeMenu}>Track shipment</a>
-          <a href="#services" onClick={closeMenu}>Services</a>
-          <a href="#how-it-works" onClick={closeMenu}>How it works</a>
+          <a className="nav-home" href="#home" onClick={closeMenu}>Home</a>
+          <a href="#tracking" onClick={closeMenu}>Track Package</a>
+          <a className="nav-services" href="#services" onClick={closeMenu}>Services <ChevronDown size={15} /></a>
           <a href="#about" onClick={closeMenu}>About</a>
           <a href="#contact" onClick={closeMenu}>Contact</a>
         </nav>
         <div className="nav-actions">
-          <a className="button button-small button-admin" href="#admin" onClick={closeMenu}>Admin portal <ArrowUpRight size={15} /></a>
-          <a className="button button-small" href="#account" onClick={closeMenu}>Customer login <ArrowUpRight size={15} /></a>
+          <a className="button button-login" href="#account" onClick={closeMenu}><UserRound size={16} /> Login</a>
+          <a className="button button-signup" href="#account-signup" onClick={closeMenu}><UserPlus size={16} /> Sign Up</a>
         </div>
       </header>
 
       <section className="hero hero-redesign" id="home">
         <div className="hero-copy">
-          <div className="eyebrow"><span className="pulse" /> INTERNATIONAL LOGISTICS & DELIVERY</div>
-          <h1>Malvis Express.<br /><em>Ship Anywhere, Anytime!</em></h1>
-          <p className="hero-text">A simpler way to move parcels, documents and cargo. Explore delivery options, send a shipment enquiry and keep up with your shipment progress from one place.</p>
+          <div className="eyebrow hero-badge"><Globe2 size={16} /> Worldwide Delivery Service <i /></div>
+          <h1>Malvis Express<br />Your <em>Global Delivery</em><br />Partner</h1>
+          <p className="hero-text">Send and receive packages anywhere in the world — safely, fast and reliably!</p>
           <div className="hero-actions">
-            <a className="button" href="#tracking">Track your shipment <ArrowRight size={17} /></a>
-            <a className="text-link" href="#services">Explore our services <ArrowUpRight size={16} /></a>
-          </div>
-          <div className="hero-trust">
-            <span><ShieldCheck size={17} /> Clear shipment updates</span>
-            <span><Globe2 size={17} /> Local & international enquiries</span>
+            <a className="button hero-primary" href="#tracking"><Package size={20} /> Track Your Package <ArrowRight size={18} /></a>
+            <a className="button hero-secondary" href="#services"><span className="play-mark">▶</span> Learn More</a>
           </div>
         </div>
-        <div className="hero-visual hero-image-placeholder" role="img" aria-label="Malvis Express logistics team image coming soon">
-          <div className="placeholder-topline"><span className="placeholder-mark"><Package size={18} /></span><span>YOUR DELIVERY. OUR PRIORITY.</span></div>
-          <div className="placeholder-globe"><Globe2 size={118} strokeWidth={0.8} /></div>
+        <div className="hero-visual hero-image-placeholder" role="img" aria-label="Malvis Express global logistics image area">
+          <div className="placeholder-topline"><span className="placeholder-mark"><Globe2 size={19} /></span><span>GLOBAL LOGISTICS SOLUTIONS</span></div>
+          <div className="placeholder-globe"><Globe2 size={150} strokeWidth={0.7} /></div>
           <div className="placeholder-route route-one"><i /><span /><b /></div>
           <div className="placeholder-route route-two"><i /><span /><b /></div>
-          <div className="placeholder-plane"><Plane size={31} /></div>
-          <div className="placeholder-package"><Package size={42} /></div>
-          <div className="placeholder-caption"><small>CONNECTED THROUGH LOGISTICS</small><strong>Moving what matters,<br />across every distance.</strong></div>
-          <div className="placeholder-chip"><CheckCircle2 size={15} /> Shipment updates in one place</div>
+          <div className="placeholder-plane"><Plane size={38} /></div>
+          <div className="placeholder-package"><Package size={48} /></div>
+          <div className="placeholder-caption"><small>DELIVERING MORE, FASTER!</small><strong>Connecting people<br />and possibilities.</strong></div>
+          <div className="hero-track-card">
+            <h3><MapPin size={19} fill="currentColor" /> Track Your Shipment</h3>
+            <form onSubmit={trackShipment}>
+              <label className="hero-track-input"><Package size={15} /><input aria-label="Tracking number" value={trackingCode} onChange={(e) => setTrackingCode(e.target.value.toUpperCase())} placeholder="Enter Tracking Number..." required /></label>
+              <button className="hero-track-button" type="submit" disabled={trackingState === 'loading'}><Search size={17} /> {trackingState === 'loading' ? 'Checking…' : 'Track Now'}</button>
+              <label className="hero-track-verify"><ShieldCheck size={15} /> <span>Verify Recipient</span><input aria-label="Recipient phone last four digits" inputMode="numeric" maxLength="4" value={trackingPhone} onChange={(e) => setTrackingPhone(e.target.value.replace(/\D/g, '').slice(0, 4))} placeholder="Last 4 digits" required /></label>
+            </form>
+            <div className="hero-track-journey"><strong>Shipment Journey</strong>
+              {trackingState === 'success' && trackingResult ? <><b><CheckCircle2 size={15} /> {statusLabels[trackingResult.shipment.status] || trackingResult.shipment.status}</b><small>Latest verified shipment status</small><a href="#tracking">View full shipment updates <ArrowRight size={13} /></a></> : trackingState === 'error' ? <p className="hero-track-error">{trackingError}</p> : <p>Enter your tracking details to view verified shipment progress and delivery updates.</p>}
+            </div>
+          </div>
         </div>
       </section>
 
-      <section className="quick-strip">
-        <div><span className="strip-icon"><Package /></span><span><strong>Multiple shipment types</strong><small>Parcels, freight and documents</small></span></div>
-        <div><span className="strip-icon"><Globe2 /></span><span><strong>Worldwide direction</strong><small>International shipping enquiries</small></span></div>
-        <div><span className="strip-icon"><Clock3 /></span><span><strong>Shipment visibility</strong><small>Tracking with recipient verification</small></span></div>
+      <section className="quick-strip benefits-strip">
+        <div><span className="strip-icon"><Globe2 /></span><span><strong>Worldwide</strong><small>Shipping</small></span></div>
+        <div><span className="strip-icon"><Clock3 /></span><span><strong>Fast & Reliable</strong><small>Delivery options</small></span></div>
+        <div><span className="strip-icon"><ShieldCheck /></span><span><strong>Secure & Safe</strong><small>Shipment handling</small></span></div>
+        <div><span className="strip-icon"><Headphones /></span><span><strong>Helpful</strong><small>Customer support</small></span></div>
+        <div><span className="strip-icon"><Handshake /></span><span><strong>Customer First</strong><small>Service approach</small></span></div>
       </section>
 
       <section className="tracking-section" id="tracking">
@@ -184,11 +191,29 @@ function App() {
         </div>
       </section>
 
-      <section className="services-section" id="services">
-        <div className="section-heading"><div><div className="eyebrow dark-eyebrow">WHAT WE MOVE</div><h2>One platform.<br /><em>Every kind of delivery.</em></h2></div><p>Shipping options for individuals, growing businesses and organisations with goods to move. Send us your route and shipment details to discuss the right service.</p></div>
-        <div className="service-grid">
-          {services.map(({ icon: Icon, title, text }, index) => <article className="service-card" key={title}><div className="service-top"><span className="service-icon"><Icon size={23} /></span><span className="service-number">0{index + 1}</span></div><h3>{title}</h3><p>{text}</p><a className="service-arrow" href="#contact" aria-label={'Enquire about ' + title}><ArrowUpRight size={19} /></a></article>)}
+      <section className="services-section reference-services" id="services">
+        <div className="reference-service-main">
+          <div className="section-heading"><div><div className="eyebrow dark-eyebrow">OUR DELIVERY SERVICES</div><h2>Fast. Reliable. <em>Everywhere.</em></h2></div><p>From local deliveries to international shipments, we help you explore delivery options with care and professionalism.</p></div>
+          <div className="service-grid">
+            {services.map(({ icon: Icon, title, text }, index) => <article className={'service-card service-card-' + index} key={title}>
+              <div className="service-art"><span className="service-art-icon"><Icon size={46} /></span><span className="service-art-orbit" /></div>
+              <div className="service-card-content"><span className="service-icon"><Icon size={25} /></span><div><h3>{title === 'Parcels & documents' ? 'Parcel Delivery' : title === 'Road freight' ? 'Road Delivery' : title === 'Air cargo' ? 'Air Freight' : 'Sea Freight'}</h3><p>{index === 0 ? 'Small Packages, Big Care' : index === 1 ? 'Fast & Reliable' : index === 2 ? 'Global Reach' : 'Cost Effective'}</p></div><a className="service-arrow" href="#contact" aria-label={'Enquire about ' + title}><ArrowRight size={16} /></a></div>
+            </article>)}
+          </div>
         </div>
+        <aside className="global-promo">
+          <div className="promo-map"><Globe2 size={190} strokeWidth={0.7} /></div>
+          <div className="promo-plane"><Plane size={64} /></div>
+          <div className="promo-copy"><h3>We connect<br />you to the world</h3><p>Your logistics partner<br />for a bigger tomorrow.</p><a href="#contact" className="promo-button">Get Started <ArrowRight size={16} /></a></div>
+          <div className="promo-ship"><Ship size={58} /><Truck size={54} /></div>
+        </aside>
+      </section>
+
+      <section className="stats-strip">
+        <div><span><Package /></span><strong>One platform</strong><small>Shipment requests</small></div>
+        <div><span><UserRound /></span><strong>Customer accounts</strong><small>Sign in and manage shipments</small></div>
+        <div><span><Globe2 /></span><strong>Global reach</strong><small>International enquiries</small></div>
+        <div><span><ShieldCheck /></span><strong>Safe & organised</strong><small>Shipment visibility</small></div>
       </section>
 
       <section className="how-section" id="how-it-works">
