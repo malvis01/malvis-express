@@ -52,6 +52,22 @@ Deno.serve(async (req: Request) => {
       });
     }
 
+    const paymentUrl = new URL("/rest/v1/payment_instructions", supabaseUrl);
+    paymentUrl.searchParams.set("select", "amount,currency_code,bank_name,account_name,account_number,payment_reference,customer_message,updated_at");
+    paymentUrl.searchParams.set("delivery_id", "eq." + shipment.id);
+    paymentUrl.searchParams.set("limit", "1");
+    const paymentResponse = await fetch(paymentUrl, { headers });
+    if (!paymentResponse.ok) throw new Error("Could not load payment instructions");
+    const paymentRows = await paymentResponse.json();
+
+    const proofUrl = new URL("/rest/v1/payment_proofs", supabaseUrl);
+    proofUrl.searchParams.set("select", "id,status,transaction_reference,customer_note,created_at,admin_note");
+    proofUrl.searchParams.set("delivery_id", "eq." + shipment.id);
+    proofUrl.searchParams.set("order", "created_at.desc");
+    const proofResponse = await fetch(proofUrl, { headers });
+    if (!proofResponse.ok) throw new Error("Could not load payment proof status");
+    const proofs = await proofResponse.json();
+
     const eventsUrl = new URL("/rest/v1/shipment_events", supabaseUrl);
     eventsUrl.searchParams.set("select", "status,description,location_label,occurred_at");
     eventsUrl.searchParams.set("delivery_id", `eq.${shipment.id}`);
@@ -61,7 +77,7 @@ Deno.serve(async (req: Request) => {
     const events = await eventsResponse.json();
 
     const { id: _privateId, tracking_code_issued: _issued, ...publicShipment } = shipment;
-    return new Response(JSON.stringify({ shipment: publicShipment, events }), {
+    return new Response(JSON.stringify({ shipment: publicShipment, events, payment_instructions: paymentRows?.[0] ?? null, payment_proofs: proofs ?? [] }), {
       status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (_error) {
