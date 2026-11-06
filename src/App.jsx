@@ -82,7 +82,7 @@ function App() {
     <main>
       <header className="topbar">
         <a className="brand" href="#home" aria-label="Flash Express Delivery Service home">
-          <span className="fedex-text-logo">Flash <small>Express</small></span>
+          <img className="flash-logo-img" src="/flash-express-logo.svg" alt="Flash Express" />
         </a>
         <button className="menu-toggle" onClick={() => setMenuOpen(!menuOpen)} aria-label="Toggle navigation">
           {menuOpen ? <X /> : <Menu />}
@@ -178,7 +178,7 @@ function App() {
       <section className="about-section" id="about"><div className="about-icon"><Globe2 size={28} /></div><div><div className="eyebrow dark-eyebrow">BUILT TO CONNECT DISTANCES</div><h2>Moving goods.<br /><em>Bringing people closer.</em></h2></div><p>This independent platform is being developed for delivery and shipment management, bringing shipment enquiries, logistics coordination and tracking into one place.</p></section>
 
 
-      <footer><a className="brand footer-brand" href="#home" aria-label="Flash Express home"><span className="fedex-text-logo">Flash <small>Express</small></span></a><span>Flash Express Delivery Service · Shipment management and tracking</span><span className="footer-status"><i /> {isSupabaseConfigured ? 'Backend project connected' : 'Backend setup pending'}</span><a className="admin-footer-link" href="#admin">Admin access</a></footer>
+      <footer><a className="brand footer-brand" href="#home" aria-label="Flash Express home"><img className="flash-logo-img footer-flash-logo" src="/flash-express-logo.svg" alt="Flash Express" /></a><span>Flash Express Delivery Service · Shipment management and tracking</span><span className="footer-status"><i /> {isSupabaseConfigured ? 'Backend project connected' : 'Backend setup pending'}</span><a className="admin-footer-link" href="#admin">Admin access</a></footer>
     </main>
   )
 }
