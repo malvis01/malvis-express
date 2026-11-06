@@ -50,7 +50,7 @@ export default function AdminDashboard({ onExit }) {
   const [search, setSearch] = useState('')
   const [showCreate, setShowCreate] = useState(false)
   const [form, setForm] = useState(blankShipment)
-  const [packageFile, setPackageFile] = useState(null)
+  const [packageFiles, setPackageFiles] = useState([])
   const [saving, setSaving] = useState(false)
   const [notice, setNotice] = useState('')
   const [error, setError] = useState('')
@@ -109,7 +109,7 @@ export default function AdminDashboard({ onExit }) {
     setError('')
     const [shipmentResult, customerResult] = await Promise.all([
       supabase.from('deliveries')
-        .select('id,tracking_number,customer_id,delivery_type,service_scope,status,pickup_location_label,dropoff_location_label,pickup_contact_name,pickup_contact_phone,dropoff_contact_name,dropoff_contact_phone,customer_note,package_image_url,quoted_total,currency_code,created_at,updated_at,tracking_code_issued')
+        .select('id,tracking_number,customer_id,delivery_type,service_scope,status,pickup_location_label,dropoff_location_label,pickup_contact_name,pickup_contact_phone,dropoff_contact_name,dropoff_contact_phone,customer_note,package_image_url,package_image_urls,quoted_total,currency_code,created_at,updated_at,tracking_code_issued')
         .order('created_at', { ascending: false }).limit(100),
       supabase.from('profiles').select('id,display_name,phone_e164').order('created_at', { ascending: false }).limit(200),
     ])
@@ -182,8 +182,8 @@ export default function AdminDashboard({ onExit }) {
     setSaving(true)
     setError('')
     setNotice('')
-    let packageImageUrl = null
-    if (packageFile) {
+    const packageImageUrls = []
+    for (const packageFile of packageFiles.slice(0, 3)) {
       const safeName = packageFile.name.replace(/[^a-zA-Z0-9._-]/g, '-')
       const storagePath = user.id + '/' + crypto.randomUUID() + '-' + safeName
       const { error: uploadError } = await supabase.storage.from('shipment-packages').upload(storagePath, packageFile, { cacheControl: '3600', upsert: false })
@@ -192,12 +192,13 @@ export default function AdminDashboard({ onExit }) {
         setSaving(false)
         return
       }
-      packageImageUrl = supabase.storage.from('shipment-packages').getPublicUrl(storagePath).data.publicUrl
+      packageImageUrls.push(supabase.storage.from('shipment-packages').getPublicUrl(storagePath).data.publicUrl)
     }
+    const packageImageUrl = packageImageUrls[0] || null
     const insert = {
       ...form,
       customer_id: null,
-      package_image_url: packageImageUrl,
+      package_image_url: packageImageUrl,\n      package_image_urls: packageImageUrls,
       tracking_code_issued: true,
       tracking_code_issued_at: new Date().toISOString(),
       tracking_code_issued_by: user.id,
@@ -220,7 +221,7 @@ export default function AdminDashboard({ onExit }) {
       ? 'Shipment created as ' + data.tracking_number + ', but its first timeline event could not be saved. Please add an update.'
       : 'Shipment created and tracking code issued: ' + data.tracking_number)
     setForm(blankShipment)
-    setPackageFile(null)
+    setPackageFiles([])
     setShowCreate(false)
     setSaving(false)
     await loadData()
@@ -294,9 +295,10 @@ export default function AdminDashboard({ onExit }) {
             <label>Recipient name<input value={form.dropoff_contact_name} onChange={(e) => setForm({ ...form, dropoff_contact_name: e.target.value })} placeholder="Recipient's full name" required /></label>
             <label>Recipient phone<input value={form.dropoff_contact_phone} onChange={(e) => setForm({ ...form, dropoff_contact_phone: e.target.value })} placeholder="+234…" required /></label>
             <label className="admin-full">Package description<textarea value={form.customer_note} onChange={(e) => setForm({ ...form, customer_note: e.target.value })} rows="3" placeholder="Package contents, size, weight or handling notes" /></label>
-            <label className="admin-full">Upload package photo<input type="file" accept="image/jpeg,image/png,image/webp" onChange={(e) => setPackageFile(e.target.files?.[0] || null)} /></label>
+            <label className="admin-full">Upload package photos (up to 3)<input type="file" accept="image/jpeg,image/png,image/webp" multiple onChange={(e) => { const selected = Array.from(e.target.files || []); if (selected.length > 3) { setError('You can upload a maximum of 3 package photos.'); setPackageFiles(selected.slice(0, 3)); } else { setError(''); setPackageFiles(selected); } }} /></label>
+            {packageFiles.length > 0 && <div className="admin-full package-preview-grid">{packageFiles.map((file, index) => <div className="package-preview" key={file.name + file.lastModified}><img src={URL.createObjectURL(file)} alt={'Package preview ' + (index + 1)} /><small>Photo {index + 1}</small></div>)}</div>}
           </div>
-          <p className="admin-hint">A unique tracking code is generated and issued when this shipment is saved. Give the code to the recipient so they can track without creating an account.</p>
+          <p className="admin-hint">A unique tracking code is generated when this shipment is saved. You can attach up to three package photos for the recipient to view while tracking.</p>
           <button className="button" type="submit" disabled={saving}>{saving ? 'Creating shipment…' : 'Create shipment & issue tracking code'} <ArrowRight size={16} /></button>
         </form>
       </section>}
@@ -315,7 +317,7 @@ export default function AdminDashboard({ onExit }) {
             <div className="shipment-route"><span>{item.pickup_location_label || 'Pickup not set'}</span><ArrowRight size={15} /><span>{item.dropoff_location_label || 'Destination not set'}</span></div>
             <div className="shipment-meta"><span>Latest location: {latestUpdates[item.id]?.location_label || 'Not updated yet'}</span><span>{latestUpdates[item.id] ? dateLabel(latestUpdates[item.id].occurred_at) : 'No location update'}</span></div>
             <div className="shipment-meta"><span>From: {item.pickup_contact_name || 'Sender'} · {item.pickup_contact_phone || 'No phone'}</span><span>To: {item.dropoff_contact_name || 'Recipient'} · {item.dropoff_contact_phone || 'No phone'}</span></div>
-            {item.package_image_url && <img src={item.package_image_url} alt="Shipment package" style={{ width: '112px', height: '84px', objectFit: 'cover', borderRadius: '6px', marginTop: '12px' }} />}
+            {(item.package_image_urls?.length ? item.package_image_urls : item.package_image_url ? [item.package_image_url] : []).length > 0 && <div className="admin-package-gallery">{(item.package_image_urls?.length ? item.package_image_urls : item.package_image_url ? [item.package_image_url] : []).slice(0, 3).map((url, index) => <img key={url} src={url} alt={'Package photo ' + (index + 1)} />)}</div>}
             <div className="shipment-meta"><span>{item.delivery_type} · {item.service_scope}</span><span>{item.tracking_code_issued ? 'Tracking issued' : 'Tracking not issued'}</span></div>
             <div className="shipment-actions"><button className="admin-plain-button" onClick={() => navigator.clipboard.writeText(item.tracking_number).then(() => setNotice('Tracking code copied: ' + item.tracking_number))}><Copy size={14} /> Copy tracking code</button><button className="admin-plain-button" onClick={() => { setEditing(item); setShowCreate(false); setEventForm({ status: item.status, location_label: '', description: '' }); setError(''); setNotice('') }}>Update location / status <ArrowRight size={14} /></button><button className="admin-plain-button" onClick={() => { setPaymentDeliveryId(paymentDeliveryId === item.id ? null : item.id); setEditing(null); setShowCreate(false); setError(''); setNotice('') }}>Quote / payments</button></div>
             {paymentDeliveryId === item.id && <AdminPayments delivery={item} adminId={user.id} onUpdated={loadData} />}
