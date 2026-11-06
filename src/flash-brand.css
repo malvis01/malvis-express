@@ -37,3 +37,20 @@ footer{background:#101010;color:#e8e8e8;border-top:3px solid #ffe500}.footer-bra
 .customer-submit,.admin-submit{background:#ffe500;color:#111}
 :focus-visible{outline:3px solid rgba(245,223,0,.8);outline-offset:3px}
 @media(max-width:650px){.flash-logo-img{width:138px;height:54px}.footer-flash-logo{width:128px;height:50px}.nav{background:#fff;border-color:#eee8a9}}
+
+/* Clear sender and receiver details on public tracking results */
+.tracking-parties{padding:18px 0 20px;border-bottom:1px solid #eee8a9}
+.tracking-parties-heading{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:12px}
+.tracking-parties-heading strong{font-size:15px;color:#111}
+.tracking-parties-heading>span{font-size:11px;color:#777}
+.tracking-party-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.tracking-party-card{min-width:0;padding:15px;border:1px solid #eee7b0;border-radius:12px;background:#fffdf0;display:flex;flex-direction:column;align-items:flex-start;gap:7px}
+.tracking-party-label{display:flex;align-items:center;gap:8px;color:#756600;font-size:10px;font-weight:800;letter-spacing:.1em;margin-bottom:2px}
+.tracking-party-icon{width:30px;height:30px;display:grid;place-items:center;border-radius:9px;background:#ffe900;color:#111}
+.tracking-party-card>b{font-size:15px;line-height:1.35;color:#111;overflow-wrap:anywhere}
+.tracking-party-phone{font-size:13px;font-weight:700;color:#6b5c00;text-decoration:none;overflow-wrap:anywhere}
+.tracking-party-phone:hover{text-decoration:underline}
+.tracking-party-address{display:flex;align-items:flex-start;gap:7px;margin-top:5px;padding-top:10px;border-top:1px solid #eee8c5;width:100%;font-size:12px;line-height:1.5;color:#333;overflow-wrap:anywhere}
+.tracking-party-address>svg{flex:0 0 auto;color:#8a7900;margin-top:2px}
+.tracking-party-address small{display:block;color:#777;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:2px}
+@media(max-width:520px){.tracking-party-grid{grid-template-columns:1fr}.tracking-parties-heading{align-items:flex-start;flex-direction:column;gap:3px}.tracking-party-card{padding:13px}}
