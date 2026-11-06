@@ -29,7 +29,7 @@ Deno.serve(async (req: Request) => {
 
     const headers = { apikey: serviceKey, Authorization: `Bearer ${serviceKey}` };
     const shipmentUrl = new URL("/rest/v1/deliveries", supabaseUrl);
-    shipmentUrl.searchParams.set("select", "id,tracking_number,delivery_type,service_scope,status,pickup_location_label,dropoff_location_label,pickup_contact_name,dropoff_contact_name,customer_note,package_image_url,tracking_code_issued");
+    shipmentUrl.searchParams.set("select", "id,tracking_number,delivery_type,service_scope,status,pickup_location_label,dropoff_location_label,pickup_contact_name,pickup_contact_phone,dropoff_contact_name,dropoff_contact_phone,customer_note,package_image_url,tracking_code_issued");
     shipmentUrl.searchParams.set("tracking_number", `eq.${trackingNumber}`);
     shipmentUrl.searchParams.set("tracking_code_issued", "eq.true");
     shipmentUrl.searchParams.set("limit", "1");

@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { ArrowLeft, ArrowRight, LogOut, Package, RefreshCw, Search, Plus, CheckCircle2, AlertCircle, Truck, Clock3, Copy } from 'lucide-react'
+import { ArrowLeft, ArrowRight, LogOut, Package, RefreshCw, Search, Plus, CheckCircle2, AlertCircle, Truck, Clock3, Copy, MessageCircle } from 'lucide-react'
 import { supabase } from './lib/supabase'
 import AdminPayments from './AdminPayments.jsx'
+import AdminSupport from './AdminSupport.jsx'
 
 // The administrator email is an internal sign-in identifier; the page only asks for a password.
 const ADMIN_AUTH_EMAIL = 'malvisdabz@gmail.com'
@@ -55,6 +56,7 @@ export default function AdminDashboard({ onExit }) {
   const [error, setError] = useState('')
   const [editing, setEditing] = useState(null)
   const [paymentDeliveryId, setPaymentDeliveryId] = useState(null)
+  const [supportDeliveryId, setSupportDeliveryId] = useState(null)
   const [eventForm, setEventForm] = useState({ status: 'in_transit', location_label: '', description: '' })
 
   const verifyAdmin = useCallback(async (candidate) => {
@@ -310,12 +312,15 @@ export default function AdminDashboard({ onExit }) {
         {loading ? <div className="admin-empty">Loading shipments…</div> : filtered.length === 0 ? <div className="admin-empty"><Package size={25} /><strong>No shipments found</strong><span>Create your first shipment to get started.</span></div> :
           <div className="admin-shipment-list">{filtered.map((item) => <article className="admin-shipment" key={item.id}>
             <div className="shipment-row-top"><div><strong>{item.tracking_number}</strong><small>{dateLabel(item.created_at)}</small></div><span className={'status-chip status-' + item.status}>{statuses.find(([value]) => value === item.status)?.[1] || item.status}</span></div>
-            <div className="shipment-route"><span>{item.pickup_location_label || 'Pickup not set'}</span><ArrowRight size={15} /><span>{item.dropoff_location_label || 'Destination not set'}</span></div>\n            <div className="shipment-meta"><span>Latest location: {latestUpdates[item.id]?.location_label || 'Not updated yet'}</span><span>{latestUpdates[item.id] ? dateLabel(latestUpdates[item.id].occurred_at) : 'No location update'}</span></div>
+            <div className="shipment-route"><span>{item.pickup_location_label || 'Pickup not set'}</span><ArrowRight size={15} /><span>{item.dropoff_location_label || 'Destination not set'}</span></div>
+            <div className="shipment-meta"><span>Latest location: {latestUpdates[item.id]?.location_label || 'Not updated yet'}</span><span>{latestUpdates[item.id] ? dateLabel(latestUpdates[item.id].occurred_at) : 'No location update'}</span></div>
             <div className="shipment-meta"><span>From: {item.pickup_contact_name || 'Sender'} · {item.pickup_contact_phone || 'No phone'}</span><span>To: {item.dropoff_contact_name || 'Recipient'} · {item.dropoff_contact_phone || 'No phone'}</span></div>
             {item.package_image_url && <img src={item.package_image_url} alt="Shipment package" style={{ width: '112px', height: '84px', objectFit: 'cover', borderRadius: '6px', marginTop: '12px' }} />}
             <div className="shipment-meta"><span>{item.delivery_type} · {item.service_scope}</span><span>{item.tracking_code_issued ? 'Tracking issued' : 'Tracking not issued'}</span></div>
             <div className="shipment-actions"><button className="admin-plain-button" onClick={() => navigator.clipboard.writeText(item.tracking_number).then(() => setNotice('Tracking code copied: ' + item.tracking_number))}><Copy size={14} /> Copy tracking code</button><button className="admin-plain-button" onClick={() => { setEditing(item); setShowCreate(false); setEventForm({ status: item.status, location_label: '', description: '' }); setError(''); setNotice('') }}>Update location / status <ArrowRight size={14} /></button><button className="admin-plain-button" onClick={() => { setPaymentDeliveryId(paymentDeliveryId === item.id ? null : item.id); setEditing(null); setShowCreate(false); setError(''); setNotice('') }}>Quote / payments</button></div>
             {paymentDeliveryId === item.id && <AdminPayments delivery={item} adminId={user.id} onUpdated={loadData} />}
+            <button className="admin-plain-button" onClick={() => setSupportDeliveryId(supportDeliveryId === item.id ? null : item.id)}><MessageCircle size={14}/> Receiver support</button>
+            {supportDeliveryId === item.id && <AdminSupport delivery={item} adminId={user.id} />}
           </article>)}</div>}
       </section>
       <p className="admin-footnote"><Clock3 size={14} /> Admin changes are recorded in the database audit log. Bank transfers are confirmed manually; automatic payment gateways and carrier integrations are not enabled.</p>
