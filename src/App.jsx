@@ -24,6 +24,7 @@ function App() {
   }, [])
   const [menuOpen, setMenuOpen] = useState(false)
   const [trackingCode, setTrackingCode] = useState('')
+  const [receiverPhoneLast4, setReceiverPhoneLast4] = useState('')
   const [trackingState, setTrackingState] = useState('idle')
   const [trackingResult, setTrackingResult] = useState(null)
   const [trackingError, setTrackingError] = useState('')
@@ -54,13 +55,18 @@ function App() {
     setTrackingState('loading')
     setTrackingResult(null)
     setTrackingError('')
+    if (!/^\\d{4}$/.test(receiverPhoneLast4)) {
+      setTrackingState('error')
+      setTrackingError("Enter the last four digits of the receiver's phone number.")
+      return
+    }
     if (!supabase) {
       setTrackingState('error')
       setTrackingError('Tracking service is not configured yet. Please try again later.')
       return
     }
     const { data, error } = await supabase.functions.invoke('public-shipment-tracking', {
-      body: { tracking_number: trackingCode }, 
+      body: { tracking_number: trackingCode.trim().toUpperCase(), phone_last4: receiverPhoneLast4 },
     })
     if (error || data?.error) {
       setTrackingState('error')
@@ -133,7 +139,10 @@ function App() {
           <form className="tracking-form" onSubmit={trackShipment}>
             <label htmlFor="tracking-code">Shipment tracking number</label>
             <div className="tracking-input"><Package size={19} /><input id="tracking-code" value={trackingCode} onChange={(e) => setTrackingCode(e.target.value.toUpperCase())} placeholder="Enter your shipment reference" autoComplete="off" required /><button type="submit" aria-label="Track shipment" disabled={trackingState === 'loading'}><ArrowRight /></button></div>
-            <button className="button track-submit" type="submit" disabled={trackingState === 'loading'}>{trackingState === 'loading' ? 'Checking shipment…' : 'Track shipment'} <ArrowRight size={16} /></button>
+            <label className="tracking-verification-label" htmlFor="receiver-phone-last4">Receiver's phone — last four digits</label>
+            <input id="receiver-phone-last4" className="tracking-verification-input" type="text" inputMode="numeric" autoComplete="off" maxLength={4} pattern="[0-9]{4}" value={receiverPhoneLast4} onChange={(e) => setReceiverPhoneLast4(e.target.value.replace(/\\D/g, '').slice(0, 4))} placeholder="e.g. 5678" required />
+            <small className="tracking-verification-help">For privacy, enter the last four digits of the receiver's phone number.</small>
+            <button className="button track-submit" type="submit" disabled={trackingState === 'loading' || receiverPhoneLast4.length !== 4}>{trackingState === 'loading' ? 'Checking shipment…' : 'Track shipment'} <ArrowRight size={16} /></button>
             {trackingState === 'error' && <p className="tracking-feedback error">{trackingError}</p>}
           </form>
           {trackingState === 'success' && trackingResult && <div className="tracking-result">
