@@ -19,7 +19,7 @@ export default function TrackingPayments({ trackingNumber, phoneLast4, instructi
   async function submit(event) {
     event.preventDefault()
     if (!file) { setError('Choose your transfer receipt first.'); return }
-    if (file.size > 5 * 1024 * 1024) { setError('The receipt must be smaller than 5 MB.'); return }
+    if (file.size > 4 * 1024 * 1024) { setError('The receipt must be smaller than 4 MB.'); return }
     setBusy(true); setError(''); setNotice('')
     try {
       const bytes = new Uint8Array(await file.arrayBuffer())
@@ -61,7 +61,7 @@ export default function TrackingPayments({ trackingNumber, phoneLast4, instructi
       {instructions.customer_message && <p className="tracking-payment-message">{instructions.customer_message}</p>}
       <p className="tracking-payment-instruction">After making the transfer, upload your receipt below. Your payment will only be confirmed after the admin verifies it.</p>
       {proofs.some((proof) => proof.status === 'submitted') ? <p className="tracking-payment-pending">Your receipt has been received and is awaiting admin review.</p> : <form className="tracking-proof-form" onSubmit={submit}>
-        <label>Upload payment receipt (JPG, PNG, WebP or PDF, max 5 MB)<input id="tracking-payment-proof-file" type="file" accept="image/jpeg,image/png,image/webp,application/pdf" onChange={(e) => setFile(e.target.files?.[0] || null)} required /></label>
+        <label>Upload payment receipt (JPG, PNG, WebP or PDF, max 4 MB)<input id="tracking-payment-proof-file" type="file" accept="image/jpeg,image/png,image/webp,application/pdf" onChange={(e) => setFile(e.target.files?.[0] || null)} required /></label>
         <label>Transaction reference (optional)<input value={reference} onChange={(e) => setReference(e.target.value)} maxLength={160} placeholder="Bank transfer reference"/></label>
         <label>Note to admin (optional)<textarea value={note} onChange={(e) => setNote(e.target.value)} rows="2" maxLength={1000} placeholder="Any additional information"/></label>
         <button className="button" type="submit" disabled={busy || !file}><Upload size={16}/>{busy ? 'Uploading receipt…' : 'Send payment proof to admin'}</button>
