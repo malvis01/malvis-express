@@ -2,3 +2,6 @@ project_id = "pgkkojkcbjvhbtcqccmu"
 
 [functions.public-shipment-tracking]
 verify_jwt = false
+
+[functions.submit-shipment-payment-proof]
+verify_jwt = false
