@@ -13,7 +13,7 @@ Deno.serve(async (req: Request) => {
     const body = await req.json();
     const tracking = String(body?.tracking_number ?? "").trim().toUpperCase();
     const last4 = String(body?.phone_last4 ?? "").replace(/\D/g, "");
-    if (!/^MX-REQ-[A-F0-9]{10}$/.test(tracking) || !/^\d{4}$/.test(last4)) {
+    if (!/^MX-REQ-[A-F0-9]{16}$/.test(tracking) || !/^\d{4}$/.test(last4)) {
       return new Response(JSON.stringify({ error: "Enter the tracking number and the receiver phone's last four digits." }), { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
     const url = Deno.env.get("SUPABASE_URL");
