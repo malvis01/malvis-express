@@ -17,14 +17,14 @@ Deno.serve(async (req: Request) => {
   try {
     const body = await req.json();
     const trackingNumber = String(body?.tracking_number ?? "").trim().toUpperCase();
-    const phoneLast4 = String(body?.phone_last4 ?? "").replace(/\\D/g, "");
+    const phoneLast4 = String(body?.phone_last4 ?? "").replace(/\D/g, "");
     if (!/^MX-REQ-[A-F0-9]{16}$/.test(trackingNumber)) {
       return new Response(JSON.stringify({ error: "Enter a valid tracking number." }), {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    if (!/^\\d{4}$/.test(phoneLast4)) {
+    if (!/^\d{4}$/.test(phoneLast4)) {
       return new Response(JSON.stringify({ error: "Enter the last four digits of the receiver's phone number." }), {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -45,7 +45,7 @@ Deno.serve(async (req: Request) => {
     if (!shipmentResponse.ok) throw new Error("Tracking lookup failed");
     const shipments = await shipmentResponse.json();
     const shipment = shipments?.[0];
-    const receiverPhone = String(shipment?.dropoff_contact_phone ?? "").replace(/\\D/g, "");
+    const receiverPhone = String(shipment?.dropoff_contact_phone ?? "").replace(/\D/g, "");
     if (!shipment || receiverPhone.slice(-4) !== phoneLast4) {
       return new Response(JSON.stringify({ error: "We couldn't find a shipment with that tracking number." }), {
         status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" },
