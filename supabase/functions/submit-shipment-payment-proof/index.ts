@@ -19,7 +19,7 @@ Deno.serve(async (req: Request) => {
     const fileName = String(body?.file_name ?? "payment-proof").replace(/[^a-zA-Z0-9._-]/g, "-").slice(0, 100);
     if (!/^MX-REQ-[A-F0-9]{16}$/.test(tracking) || !/^\d{4}$/.test(last4)) return json({ error: "Enter a valid tracking number and receiver phone's last four digits." }, 400);
     if (!["image/jpeg", "image/png", "image/webp", "application/pdf"].includes(mime)) return json({ error: "Upload a JPG, PNG, WebP image or PDF receipt." }, 400);
-    if (!base64 || base64.length > 7000000) return json({ error: "The receipt is empty or too large. Please upload a file under 5 MB." }, 400);
+    if (!base64 || base64.length > 5600000) return json({ error: "The receipt is empty or too large. Please upload a file under 5 MB." }, 400);
     const url = Deno.env.get("SUPABASE_URL");
     const key = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? Deno.env.get("SUPABASE_SECRET_KEY");
     if (!url || !key) throw new Error("Payment proof service is not configured");
@@ -35,8 +35,17 @@ Deno.serve(async (req: Request) => {
     const receiverPhone = String(shipment?.dropoff_contact_phone ?? "").replace(/\D/g, "");
     if (!shipment || receiverPhone.slice(-4) !== last4) return json({ error: "Shipment or receiver verification details did not match." }, 403);
     if (shipment.status !== "awaiting_payment") return json({ error: "This shipment is not currently awaiting payment." }, 409);
+    const pendingUrl = new URL("/rest/v1/payment_proofs", url);
+    pendingUrl.searchParams.set("select", "id");
+    pendingUrl.searchParams.set("delivery_id", "eq." + shipment.id);
+    pendingUrl.searchParams.set("status", "eq.submitted");
+    pendingUrl.searchParams.set("limit", "1");
+    const pendingResponse = await fetch(pendingUrl, { headers });
+    if (!pendingResponse.ok) throw new Error("Could not check existing payment receipts");
+    if ((await pendingResponse.json()).length) return json({ error: "A payment receipt is already awaiting admin review." }, 409);
+
     const binary = Uint8Array.from(atob(base64), (char) => char.charCodeAt(0));
-    if (binary.byteLength > 5 * 1024 * 1024) return json({ error: "The receipt must be smaller than 5 MB." }, 400);
+    if (binary.byteLength > 4 * 1024 * 1024) return json({ error: "The receipt must be smaller than 4 MB." }, 400);
     const extension = fileName.includes(".") ? fileName.split(".").pop() : (mime === "application/pdf" ? "pdf" : "jpg");
     const path = "guest/" + shipment.id + "/" + crypto.randomUUID() + "." + extension;
     const uploadResponse = await fetch(new URL("/storage/v1/object/payment-proofs/" + path, url), {
