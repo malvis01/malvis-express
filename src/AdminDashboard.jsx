@@ -198,7 +198,8 @@ export default function AdminDashboard({ onExit }) {
     const insert = {
       ...form,
       customer_id: null,
-      package_image_url: packageImageUrl,\n      package_image_urls: packageImageUrls,
+      package_image_url: packageImageUrl,
+      package_image_urls: packageImageUrls,
       tracking_code_issued: true,
       tracking_code_issued_at: new Date().toISOString(),
       tracking_code_issued_by: user.id,
