@@ -1,0 +1,39 @@
+/* Flash Express brand: yellow, white and black */
+:root{--navy:#111;--blue:#171717;--blue-deep:#050505;--cyan:#f5df00;--muted:#666;--flash-yellow:#ffe500}
+body,.admin-shell,.customer-shell{color:#101010;background:#fff}
+.topbar{background:#fff;border-bottom:1px solid #ededed}
+.flash-logo-img{display:block;width:166px;height:64px;object-fit:contain;object-position:left center}
+.footer-flash-logo{width:150px;height:58px}
+.brand{color:#111}.nav{color:#222}.nav a:hover,.login-link:hover{color:#8b7b00}
+.button,.tracking-panel .tracking-input button,.tracking-panel .track-submit{background:#ffe500;color:#111;border:1px solid #e6d000;box-shadow:0 7px 18px rgba(0,0,0,.1)}
+.button:hover,.tracking-panel .tracking-input button:hover,.tracking-panel .track-submit:hover{background:#e8d000;color:#000}
+.hero{background:linear-gradient(115deg,#fff 0%,#fffdf0 60%,#fff8b8 100%)}
+.hero h1,.section-heading h2,.about-section h2{color:#111}
+.hero h1 em,h1 em,h2 em,.section-heading h2 em{color:#9b8900}
+.eyebrow{color:#6b5e00}.pulse{background:#ffe500;box-shadow:0 0 0 5px rgba(245,223,0,.22)}
+.parcel-icon,.strip-icon,.service-icon,.about-icon{color:#171717;background:#fff7a6}
+.quick-strip{border-color:#eee8a9;background:#fff}
+.tracking-section{background:radial-gradient(circle at 92% 12%,rgba(255,229,0,.18),transparent 34%),linear-gradient(125deg,#101010,#242424)}
+.tracking-section h2{color:#fff}.tracking-section h2 em,.how-section h2 em{color:#ffe500}.tracking-intro{color:#e2e2e2}
+.tracking-panel .tracking-form{background:#fff;border-color:#f0e48a}.tracking-panel .tracking-form label{color:#111}
+.tracking-panel .tracking-input{background:#fffef2;border-color:#e7dfaa}
+.tracking-panel .tracking-input button,.tracking-panel .track-submit{background:#ffe500;color:#111}
+.services-section{background:#fffdf0}.service-card{border-color:#eee7a5;background:#fff}
+.how-section{background:linear-gradient(120deg,#101010,#292929)}.how-section .eyebrow,.steps b{color:#ffe500}
+.how-section h2,.steps strong{color:#fff}.steps>div{border-color:rgba(255,229,0,.28);background:rgba(255,255,255,.045)}.steps p{color:#d4d4d4}
+.about-section{background:#fff}.about-section>p,.quote-copy>p{color:#5f5f5f}
+footer{background:#101010;color:#e8e8e8;border-top:3px solid #ffe500}.footer-brand{color:#fff}.footer-status{color:#ddd}.admin-footer-link{color:#ffe500}
+.admin-shell{background:#f7f7f2}.admin-top,.admin-form-card,.admin-list-card,.admin-login-card,.customer-top,.customer-login-card,.customer-booking-card,.customer-shipments-card{background:#fff;border-color:#e8e3bd}
+.admin-heading h1,.admin-login-card h1,.customer-login-card h1,.customer-heading h1{color:#111}
+.admin-heading h1 em,.admin-login-card h1 em,.customer-login-card h1 em,.customer-heading h1 em{color:#9b8900}
+.admin-stats>div>span,.admin-lock,.customer-lock{background:#fff7a6;color:#111}
+.admin-notice{background:#f8f5d7;color:#4b4300}
+.status-in_transit,.status-out_for_delivery,.status-package_picked_up{background:#fff7a6;color:#282300}
+.admin-login-wrap,.customer-login-wrap{background:linear-gradient(130deg,#fff,#fffbe0)}
+.admin-form-grid input:focus,.admin-form-grid select:focus,.admin-form-grid textarea:focus,.admin-login-card input:focus,.customer-login-card input:focus,.customer-form-grid input:focus,.customer-form-grid select:focus,.customer-form-grid textarea:focus{border-color:#c8b600;box-shadow:0 0 0 3px rgba(245,223,0,.2)}
+.tracking-current-location{border-color:#eee4a0;background:#fffdf0;color:#554b00}.tracking-current-location small{color:#7b6c00}.tracking-current-location b{color:#111}
+.tracking-support,.admin-support-panel{border-color:#e8e0a6;color:#111}.tracking-chat-message.from-receiver{background:#fff7a6}.tracking-chat-message,.admin-support-messages article{background:#f5f5f0}
+.tracking-support input,.tracking-chat-compose input,.admin-support-panel input{border-color:#e4dfbd;color:#111}
+.customer-submit,.admin-submit{background:#ffe500;color:#111}
+:focus-visible{outline:3px solid rgba(245,223,0,.8);outline-offset:3px}
+@media(max-width:650px){.flash-logo-img{width:138px;height:54px}.footer-flash-logo{width:128px;height:50px}.nav{background:#fff;border-color:#eee8a9}}
