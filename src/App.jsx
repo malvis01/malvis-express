@@ -148,10 +148,23 @@ function App() {
           {trackingState === 'success' && trackingResult && <div className="tracking-result">
             <div className="result-heading"><span><CheckCircle2 size={17} /> Shipment found</span><strong>{trackingResult.shipment.tracking_number}</strong></div>
             <div className="result-current"><small>CURRENT STATUS</small><strong>{statusLabels[trackingResult.shipment.status] || trackingResult.shipment.status}</strong><span>{trackingResult.shipment.delivery_type} · {trackingResult.shipment.service_scope}</span></div>
-            <div className="tracking-parties" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', padding: '16px 0', borderBottom: '1px solid #edf1f3' }}>
-              <div><small>SENDER</small><b style={{ display: 'block', marginTop: '5px' }}>{trackingResult.shipment.pickup_contact_name || '—'}</b><span>{trackingResult.shipment.pickup_contact_phone || 'Phone not provided'}</span><span style={{ display: 'block', marginTop: '4px' }}>{trackingResult.shipment.pickup_location_label || '—'}</span></div>
-              <div><small>RECEIVER</small><b style={{ display: 'block', marginTop: '5px' }}>{trackingResult.shipment.dropoff_contact_name || '—'}</b><span>{trackingResult.shipment.dropoff_contact_phone || 'Phone not provided'}</span><span style={{ display: 'block', marginTop: '4px' }}>{trackingResult.shipment.dropoff_location_label || '—'}</span></div>
-            </div>
+            <section className="tracking-parties" aria-label="Sender and receiver information">
+              <div className="tracking-parties-heading"><strong>Shipment contacts</strong><span>Sender and delivery recipient</span></div>
+              <div className="tracking-party-grid">
+                <article className="tracking-party-card">
+                  <div className="tracking-party-label"><span className="tracking-party-icon"><Package size={17} /></span><span>SENDER</span></div>
+                  <b>{trackingResult.shipment.pickup_contact_name || 'Sender name not provided'}</b>
+                  <a href={trackingResult.shipment.pickup_contact_phone ? 'tel:' + trackingResult.shipment.pickup_contact_phone : undefined} className="tracking-party-phone">{trackingResult.shipment.pickup_contact_phone || 'Phone not provided'}</a>
+                  <div className="tracking-party-address"><MapPin size={15} /><span><small>Pickup address</small>{trackingResult.shipment.pickup_location_label || 'Pickup address not provided'}</span></div>
+                </article>
+                <article className="tracking-party-card">
+                  <div className="tracking-party-label"><span className="tracking-party-icon"><Truck size={17} /></span><span>RECEIVER</span></div>
+                  <b>{trackingResult.shipment.dropoff_contact_name || 'Receiver name not provided'}</b>
+                  <a href={trackingResult.shipment.dropoff_contact_phone ? 'tel:' + trackingResult.shipment.dropoff_contact_phone : undefined} className="tracking-party-phone">{trackingResult.shipment.dropoff_contact_phone || 'Phone not provided'}</a>
+                  <div className="tracking-party-address"><MapPin size={15} /><span><small>Delivery address</small>{trackingResult.shipment.dropoff_location_label || 'Delivery address not provided'}</span></div>
+                </article>
+              </div>
+            </section>
             {trackingResult.shipment.customer_note && <p className="tracking-package-note" style={{ fontSize: '11px', color: '#657b87', lineHeight: 1.6, paddingTop: '12px' }}>{trackingResult.shipment.customer_note}</p>}
             {trackingResult.shipment.package_image_url && <img src={trackingResult.shipment.package_image_url} alt="Package" style={{ maxWidth: '100%', maxHeight: '190px', objectFit: 'contain', marginTop: '10px', borderRadius: '6px' }} />}
             <div className="timeline"><strong>Shipment updates</strong>
