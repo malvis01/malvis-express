@@ -56,7 +56,7 @@ function App() {
     setTrackingState('loading')
     setTrackingResult(null)
     setTrackingError('')
-    if (!/^\d{4}$/.test(receiverPhoneLast4)) {
+    if (!/^\\d{4}$/.test(receiverPhoneLast4)) {
       setTrackingState('error')
       setTrackingError("Enter the last four digits of the receiver's phone number.")
       return
@@ -66,16 +66,66 @@ function App() {
       setTrackingError('Tracking service is not configured yet. Please try again later.')
       return
     }
-    const { data, error } = await supabase.functions.invoke('public-shipment-tracking', {
-      body: { tracking_number: trackingCode.trim().toUpperCase(), phone_last4: receiverPhoneLast4 },
-    })
-    if (error || data?.error) {
+
+    try {
+      const { data, error } = await supabase.functions.invoke('public-shipment-tracking', {
+        body: { tracking_number: trackingCode.trim().toUpperCase(), phone_last4: receiverPhoneLast4 },
+      })
+
+      let responseMessage = ''
+      if (error?.context && typeof error.context.clone === 'function') {
+        try {
+          const responseText = await error.context.clone().text()
+          if (responseText) {
+            try {
+              const responseBody = JSON.parse(responseText)
+              responseMessage = responseBody.error || responseBody.message || ''
+            } catch {
+              responseMessage = responseText.slice(0, 240)
+            }
+          }
+        } catch (responseReadError) {
+          console.warn('Could not read tracking error response:', responseReadError)
+        }
+      }
+
+      if (error) {
+        console.error('Shipment tracking request failed:', {
+          message: error.message,
+          name: error.name,
+          status: error.context?.status,
+          responseMessage,
+        })
+        setTrackingState('error')
+        setTrackingError(responseMessage || error.message || 'The tracking service could not be reached. Please try again.')
+        return
+      }
+
+      if (data?.error) {
+        setTrackingState('error')
+        setTrackingError(data.error)
+        return
+      }
+
+      if (!data?.shipment || typeof data.shipment !== 'object') {
+        console.error('Tracking service returned an unexpected response:', data)
+        setTrackingState('error')
+        setTrackingError('The tracking service returned incomplete shipment information. Please contact support.')
+        return
+      }
+
+      setTrackingResult({
+        ...data,
+        events: Array.isArray(data.events) ? data.events : [],
+        payment_proofs: Array.isArray(data.payment_proofs) ? data.payment_proofs : [],
+        payment_instructions: data.payment_instructions || null,
+      })
+      setTrackingState('success')
+    } catch (requestError) {
+      console.error('Unexpected shipment tracking error:', requestError)
       setTrackingState('error')
-      setTrackingError(data?.error || 'We could not complete the tracking lookup. Please try again.')
-      return
+      setTrackingError(requestError?.message || 'A connection problem interrupted the tracking lookup. Please try again.')
     }
-    setTrackingResult(data)
-    setTrackingState('success')
   }
   if (adminMode) return <AdminDashboard onExit={() => { window.location.hash = '#home'; setAdminMode(false) }} />
 
