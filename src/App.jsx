@@ -7,6 +7,7 @@ import {
 import { isSupabaseConfigured, supabase } from './lib/supabase'
 import AdminDashboard from './AdminDashboard.jsx'
 import SupportChat from './SupportChat.jsx'
+import TrackingPayments from './TrackingPayments.jsx'
 
 const services = [
   { icon: Package, title: 'Parcels & documents', text: 'For personal packages, important documents and everyday deliveries.' },
