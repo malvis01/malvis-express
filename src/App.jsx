@@ -56,7 +56,7 @@ function App() {
     setTrackingState('loading')
     setTrackingResult(null)
     setTrackingError('')
-    if (!/^\\d{4}$/.test(receiverPhoneLast4)) {
+    if (!/^\d{4}$/.test(receiverPhoneLast4)) {
       setTrackingState('error')
       setTrackingError("Enter the last four digits of the receiver's phone number.")
       return
